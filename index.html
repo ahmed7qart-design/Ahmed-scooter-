@@ -60,6 +60,11 @@
       cursor: pointer;
     }
 
+    #permissionBtn {
+      background: #f59e0b;
+      color: white;
+    }
+
     #locationBtn {
       background: #1877f2;
       color: white;
@@ -115,8 +120,12 @@
   </div>
 
   <div id="status">
-    📍 الموقع غير محدد
+    📍 السماح بالموقع مطلوب
   </div>
+
+  <button id="permissionBtn">
+    📍 السماح للخريطة بالموقع
+  </button>
 
   <button id="locationBtn">
     📍 تحديد موقعي
@@ -144,6 +153,9 @@
 
 const statusBox =
   document.getElementById("status");
+
+const permissionBtn =
+  document.getElementById("permissionBtn");
 
 const locationBtn =
   document.getElementById("locationBtn");
@@ -181,6 +193,63 @@ let marker = null;
 
 
 // ==========================
+// زر السماح بالموقع
+// ==========================
+
+permissionBtn.addEventListener(
+  "click",
+  () => {
+
+    if (!navigator.geolocation) {
+
+      statusBox.textContent =
+        "❌ جهازك لا يدعم تحديد الموقع";
+
+      return;
+    }
+
+    statusBox.textContent =
+      "🟡 اختر السماح بالموقع...";
+
+    navigator.geolocation.getCurrentPosition(
+
+      (position) => {
+
+        permissionBtn.textContent =
+          "✅ تم السماح بالموقع";
+
+        permissionBtn.style.background =
+          "#16a34a";
+
+        statusBox.textContent =
+          "🟢 تم السماح بالموقع";
+
+        showLocation(position);
+
+      },
+
+      (error) => {
+
+        console.log(error);
+
+        statusBox.textContent =
+          "🔴 لم يتم السماح بالموقع";
+
+      },
+
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+
+    );
+
+  }
+);
+
+
+// ==========================
 // تحديد الموقع
 // ==========================
 
@@ -188,4 +257,193 @@ locationBtn.addEventListener(
   "click",
   () => {
 
-    if (!
+    if (!navigator.geolocation) {
+
+      statusBox.textContent =
+        "❌ تحديد الموقع غير مدعوم";
+
+      return;
+    }
+
+    statusBox.textContent =
+      "🟡 جاري تحديد موقعك...";
+
+    navigator.geolocation.getCurrentPosition(
+
+      showLocation,
+
+      () => {
+
+        statusBox.textContent =
+          "🔴 تعذر تحديد الموقع";
+
+      },
+
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+
+    );
+
+  }
+);
+
+
+// ==========================
+// عرض الموقع على الخريطة
+// ==========================
+
+function showLocation(position) {
+
+  const lat =
+    position.coords.latitude;
+
+  const lon =
+    position.coords.longitude;
+
+  map.setView(
+    [lat, lon],
+    17
+  );
+
+  if (marker) {
+    map.removeLayer(marker);
+  }
+
+  marker =
+    L.marker(
+      [lat, lon]
+    ).addTo(map);
+
+  marker
+    .bindPopup("📍 موقعك الحالي")
+    .openPopup();
+
+  statusBox.textContent =
+    "🟢 موقعك ظاهر على الخريطة";
+}
+
+
+// ==========================
+// بدء الرحلة
+// ==========================
+
+startBtn.addEventListener(
+  "click",
+  () => {
+
+    statusBox.textContent =
+      "🟢 الرحلة بدأت";
+
+    startBtn.textContent =
+      "🛴 الرحلة جارية";
+
+  }
+);
+
+
+// ==========================
+// Bluetooth
+// ==========================
+
+let device = null;
+let server = null;
+
+bluetoothBtn.addEventListener(
+  "click",
+  async () => {
+
+    if (!navigator.bluetooth) {
+
+      statusBox.textContent =
+        "❌ Bluetooth غير مدعوم";
+
+      return;
+    }
+
+    try {
+
+      statusBox.textContent =
+        "🟡 اختر جهاز Bluetooth...";
+
+      device =
+        await navigator.bluetooth.requestDevice({
+
+          acceptAllDevices: true,
+
+          optionalServices: [
+            "battery_service",
+            "device_information"
+          ]
+
+        });
+
+      statusBox.textContent =
+        "🟡 جاري الاتصال...";
+
+      server =
+        await device.gatt.connect();
+
+      statusBox.textContent =
+        "🟢 Bluetooth متصل";
+
+      bluetoothBtn.textContent =
+        "🟢 Bluetooth متصل";
+
+      servicesBox.style.display =
+        "block";
+
+      servicesBox.textContent =
+        "🔍 جاري قراءة الخدمات...";
+
+      const services =
+        await server.getPrimaryServices();
+
+      servicesBox.innerHTML = "";
+
+      services.forEach(
+        (service) => {
+
+          const line =
+            document.createElement("div");
+
+          line.textContent =
+            "Service: " +
+            service.uuid;
+
+          servicesBox.appendChild(line);
+
+        }
+      );
+
+      device.addEventListener(
+        "gattserverdisconnected",
+        () => {
+
+          statusBox.textContent =
+            "🔴 Bluetooth غير متصل";
+
+          bluetoothBtn.textContent =
+            "🔵 اتصال Bluetooth";
+
+        }
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+      statusBox.textContent =
+        "🔴 لم يتم الاتصال";
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
