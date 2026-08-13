@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHMED SCOOTER</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#080808;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+.app{
+    max-width:500px;
+    margin:auto;
+    padding:25px 18px;
+}
+
+h1{
+    text-align:center;
+    color:#ff1515;
+    margin-bottom:25px;
+}
+
+.card{
+    background:#151515;
+    border:1px solid #292929;
+    border-radius:18px;
+    padding:18px;
+    margin:12px 0;
+    text-align:center;
+}
+
+.label{
+    color:#aaa;
+    font-size:15px;
+}
+
+.value{
+    font-size:30px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+button{
+    width:100%;
+    border:0;
+    border-radius:15px;
+    padding:17px;
+    margin-top:12px;
+    background:#e60000;
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+#status{
+    text-align:center;
+    color:#aaa;
+    margin-top:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>🛴 AHMED SCOOTER</h1>
+
+<div class="card">
+    <div class="label">السرعة</div>
+    <div class="value" id="speed">0.0 km/h</div>
+</div>
+
+<div class="card">
+    <div class="label">المسافة</div>
+    <div class="value" id="distance">0.00 km</div>
+</div>
+
+<div class="card">
+    <div class="label">الوقت</div>
+    <div class="value" id="time">00:00</div>
+</div>
+
+<div class="card">
+    <div class="label">السعرات التقديرية</div>
+    <div class="value" id="calories">0 kcal</div>
+</div>
+
+<button onclick="requestLocation()">
+📍 السماح بالموقع
+</button>
+
+<button onclick="connectBluetooth()">
+📡 البحث عن السكوتر Bluetooth
+</button>
+
+<button id="rideButton" onclick="toggleRide()">
+▶️ ابدأ الرحلة
+</button>
+
+<div id="status">
+جاهز
+</div>
+
+</div>
+
+<script>
+
+let running = false;
+let watchId = null;
+let timer = null;
+
+let startTime = 0;
+let totalDistance = 0;
+let lastPosition = null;
+
+async function requestLocation(){
+
+    if(!navigator.geolocation){
+        setStatus("❌ GPS غير مدعوم");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function(position){
+
+            setStatus(
+                "✅ تم السماح بالموقع"
+            );
+
+        },
+        function(error){
+
+            setStatus(
+                "⚠️ لازم تسمح للموقع من إعدادات المتصفح"
+            );
+
+        },
+        {
+            enableHighAccuracy:true,
+            timeout:10000
+        }
+    );
+}
+
+
+async function connectBluetooth(){
+
+    if(!navigator.bluetooth){
+
+        setStatus(
+            "❌ المتصفح لا يدعم Web Bluetooth"
+        );
+
+        return;
+    }
+
+    try{
+
+        setStatus("🔎 ابحث عن السكوتر...");
+
+        const device =
+            await navigator.bluetooth.requestDevice({
+                acceptAllDevices:true
+            });
+
+        setStatus(
+            "✅ تم العثور على: " +
+            (device.name || "جهاز Bluetooth")
+        );
+
+    }catch(error){
+
+        setStatus(
+            "⚠️ لم يتم اختيار جهاز"
+        );
+
+    }
+}
+
+
+function toggleRide(){
+
+    if(running){
+
+        stopRide();
+
+    }else{
+
+        startRide();
+
+    }
+
+}
+
+
+function startRide(){
+
+    if(!navigator.geolocation){
+
+        setStatus("❌ GPS غير متاح");
+
+        return;
+    }
+
+    running=true;
+
+    totalDistance=0;
+    lastPosition=null;
+
+    startTime=Date.now();
+
+    document.getElementById("rideButton").innerHTML=
+        "⏹️ إيقاف الرحلة";
+
+    setStatus("🟢 الرحلة تعمل");
+
+    timer=setInterval(updateTime,1000);
+
+    watchId=navigator.geolocation.watchPosition(
+
+        updateLocation,
+
+        function(){
+
+            setStatus(
+                "⚠️ تعذر قراءة الموقع"
+            );
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            maximumAge:1000,
+            timeout:10000
+        }
+
+    );
+
+}
+
+
+function stopRide(){
+
+    running=false;
+
+    if(watchId!==null){
+
+        navigator.geolocation.clearWatch(
+            watchId
+        );
+
+        watchId=null;
+    }
+
+    clearInterval(timer);
+
+    document.getElementById("rideButton").innerHTML=
+        "▶️ ابدأ الرحلة";
+
+    setStatus("🔴 الرحلة متوقفة");
+
+}
+
+
+function updateLocation(position){
+
+    if(!running)return;
+
+    const latitude=
+        position.coords.latitude;
+
+    const longitude=
+        position.coords.longitude;
+
+    if(position.coords.speed !== null){
+
+        let currentSpeed=
+            position.coords.speed*3.6;
+
+        if(currentSpeed < 0)
+            currentSpeed=0;
+
+        document.getElementById("speed").innerHTML=
+            currentSpeed.toFixed(1)+" km/h";
+    }
+
+
+    if(lastPosition){
+
+        const d=
+            calculateDistance(
+
+                lastPosition.latitude,
+                lastPosition.longitude,
+
+                latitude,
+                longitude
+
+            );
+
+        /*
+        تجاهل القفزات الغريبة في GPS
+        */
+
+        if(d < 100){
+
+            totalDistance += d;
+
+        }
+
+        document.getElementById("distance").innerHTML=
+            (totalDistance/1000).toFixed(2)+" km";
+
+
+        /*
+        السعرات هنا تقديرية جدًا.
+        */
+
+        const kcal=
+            (totalDistance/1000)*35;
+
+        document.getElementById("calories").innerHTML=
+            kcal.toFixed(0)+" kcal";
+
+    }
+
+
+    lastPosition={
+        latitude:latitude,
+        longitude:longitude
+    };
+
+}
+
+
+function updateTime(){
+
+    if(!running)return;
+
+    const seconds=
+        Math.floor(
+            (Date.now()-startTime)/1000
+        );
+
+    const minutes=
+        Math.floor(seconds/60);
+
+    const sec=
+        seconds%60;
+
+    document.getElementById("time").innerHTML=
+        String(minutes).padStart(2,"0")
+        +":"
+        +
+        String(sec).padStart(2,"0");
+
+}
+
+
+function calculateDistance(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+){
+
+    const R=6371000;
+
+    const dLat=
+        (lat2-lat1)*Math.PI/180;
+
+    const dLon=
+        (lon2-lon1)*Math.PI/180;
+
+    const a=
+        Math.sin(dLat/2)**2
+        +
+        Math.cos(lat1*Math.PI/180)
+        *
+        Math.cos(lat2*Math.PI/180)
+        *
+        Math.sin(dLon/2)**2;
+
+    const c=
+        2*Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1-a)
+        );
+
+    return R*c;
+
+}
+
+
+function setStatus(text){
+
+    document.getElementById("status").innerHTML=
+        text;
+
+}
+
+
+/*
+نطلب الموقع عند تحميل الصفحة.
+أندرويد/المتصفح سيظهر نافذة السماح بنفسه.
+*/
+
+window.addEventListener(
+    "load",
+    function(){
+
+        requestLocation();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
