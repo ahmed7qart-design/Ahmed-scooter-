@@ -2,386 +2,176 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سكوتر GPS</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Scooter GPS Pro</title>
 
 <link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#080b10;
+ color:white;
+ font-family:Arial,sans-serif;
 }
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #111;
-  color: white;
+header{
+ padding:18px;
+ text-align:center;
+ font-size:25px;
+ font-weight:bold;
 }
-
-.header {
-  text-align: center;
-  padding: 15px;
-  font-size: 24px;
-  font-weight: bold;
+.dashboard{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px;
+ padding:10px;
 }
-
-.stats {
-  display: flex;
-  gap: 10px;
-  padding: 10px;
+.card{
+ background:#151a22;
+ border-radius:18px;
+ padding:15px;
+ text-align:center;
+ box-shadow:0 4px 15px #0006;
 }
-
-.card {
-  flex: 1;
-  background: #222;
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
+.card small{color:#9ca3af}
+.value{
+ display:block;
+ font-size:27px;
+ font-weight:bold;
+ margin-top:7px;
 }
-
-.number {
-  display: block;
-  font-size: 28px;
-  font-weight: bold;
-  margin-top: 5px;
+.speed{
+ grid-column:span 2;
 }
-
-#map {
-  height: 55vh;
-  width: 100%;
+.speed .value{
+ font-size:55px;
 }
-
-.buttons {
-  padding: 15px;
-  display: flex;
-  gap: 10px;
+#map{
+ height:45vh;
+ width:100%;
 }
-
-button {
-  flex: 1;
-  padding: 16px;
-  border: none;
-  border-radius: 15px;
-  font-size: 18px;
-  font-weight: bold;
+.controls{
+ display:flex;
+ gap:10px;
+ padding:12px;
 }
-
-#start {
-  background: #00c853;
-  color: white;
+button{
+ flex:1;
+ border:0;
+ border-radius:16px;
+ padding:17px;
+ color:white;
+ font-size:18px;
+ font-weight:bold;
 }
+#start{background:#00a86b}
+#stop{background:#d32f2f}
 
-#stop {
-  background: #d50000;
-  color: white;
+.info{
+ margin:10px;
+ padding:15px;
+ background:#151a22;
+ border-radius:18px;
 }
-
-.radar {
-  margin: 10px;
-  padding: 15px;
-  background: #222;
-  border-radius: 15px;
-  text-align: center;
+.info div{
+ display:flex;
+ justify-content:space-between;
+ padding:8px 0;
+ border-bottom:1px solid #292f39;
 }
+.info div:last-child{border:0}
 
-.radar-circle {
-  margin: auto;
-  width: 180px;
-  height: 180px;
-  border: 2px solid #00ff88;
-  border-radius: 50%;
-  position: relative;
-  background:
-    radial-gradient(circle,
-    transparent 20%,
-    rgba(0,255,136,.08) 21%,
-    transparent 22%);
+.radar{
+ margin:10px;
+ background:#151a22;
+ border-radius:20px;
+ padding:20px;
+ text-align:center;
 }
-
-.radar-line {
-  position: absolute;
-  width: 2px;
-  height: 50%;
-  background: #00ff88;
-  left: 50%;
-  bottom: 50%;
-  transform-origin: bottom;
-  animation: scan 2s linear infinite;
+.radarCircle{
+ width:210px;
+ height:210px;
+ margin:auto;
+ border:2px solid #00ff88;
+ border-radius:50%;
+ position:relative;
+ overflow:hidden;
+ background:
+ radial-gradient(circle,transparent 20%,#00ff8815 21%,transparent 22%),
+ linear-gradient(90deg,transparent 49.5%,#00ff8850 50%,transparent 50.5%),
+ linear-gradient(0deg,transparent 49.5%,#00ff8850 50%,transparent 50.5%);
 }
-
-@keyframes scan {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.scan{
+ position:absolute;
+ width:3px;
+ height:50%;
+ background:#00ff88;
+ left:50%;
+ bottom:50%;
+ transform-origin:bottom;
+ animation:scan 2s linear infinite;
 }
-
-.status {
-  text-align: center;
-  padding: 8px;
-  color: #aaa;
+.scooterDot{
+ position:absolute;
+ left:50%;
+ top:50%;
+ width:13px;
+ height:13px;
+ background:#00ff88;
+ border-radius:50%;
+ transform:translate(-50%,-50%);
+}
+.car{
+ position:absolute;
+ width:12px;
+ height:12px;
+ background:#ff4545;
+ border-radius:50%;
+ box-shadow:0 0 12px #ff4545;
+}
+@keyframes scan{
+ from{transform:rotate(0deg)}
+ to{transform:rotate(360deg)}
+}
+.status{
+ text-align:center;
+ padding:10px;
+ color:#aaa;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  🛴 Scooter GPS
+<header>🛴 Scooter GPS Pro</header>
+
+<div class="dashboard">
+
+<div class="card speed">
+<small>السرعة الحالية</small>
+<span class="value" id="speed">0.0</span>
+<small>كم / ساعة</small>
 </div>
 
-<div class="stats">
-
-  <div class="card">
-    السرعة
-    <span class="number" id="speed">0</span>
-    كم/س
-  </div>
-
-  <div class="card">
-    المسافة
-    <span class="number" id="distance">0.00</span>
-    كم
-  </div>
-
+<div class="card">
+<small>🏁 أعلى سرعة</small>
+<span class="value" id="maxSpeed">0.0</span>
+<small>كم/س</small>
 </div>
 
-<div id="map"></div>
-
-<div class="buttons">
-  <button id="start">▶ بدء الرحلة</button>
-  <button id="stop">■ إيقاف</button>
+<div class="card">
+<small>📊 متوسط السرعة</small>
+<span class="value" id="avgSpeed">0.0</span>
+<small>كم/س</small>
 </div>
 
-<div class="status" id="status">
-  الرحلة متوقفة
+<div class="card">
+<small>🛣️ المسافة</small>
+<span class="value" id="distance">0.00</span>
+<small>كم</small>
 </div>
 
-<div class="radar">
-  <h3>📡 الرادار الأمامي</h3>
-
-  <div class="radar-circle">
-    <div class="radar-line"></div>
-  </div>
-
-  <p id="radarStatus">
-    الرادار في وضع الاستعداد
-  </p>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-
-let map;
-let marker;
-
-let watchID = null;
-
-let running = false;
-
-let lastPosition = null;
-
-let totalDistance = 0;
-
-// إنشاء الخريطة
-map = L.map("map").setView([31.2001, 29.9187], 15);
-
-// خريطة OpenStreetMap
-L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom: 19,
-    attribution: "© OpenStreetMap"
-  }
-).addTo(map);
-
-
-// بدء الرحلة
-document.getElementById("start").onclick = function () {
-
-  if (!navigator.geolocation) {
-    alert("الموبايل لا يدعم GPS");
-    return;
-  }
-
-  running = true;
-
-  totalDistance = 0;
-
-  lastPosition = null;
-
-  document.getElementById("distance").innerText = "0.00";
-
-  document.getElementById("status").innerText =
-    "🟢 الرحلة بدأت...";
-
-  watchID = navigator.geolocation.watchPosition(
-
-    updateLocation,
-
-    locationError,
-
-    {
-      enableHighAccuracy: true,
-      maximumAge: 1000,
-      timeout: 10000
-    }
-
-  );
-
-};
-
-
-// تحديث الموقع
-function updateLocation(position) {
-
-  if (!running) return;
-
-  const lat = position.coords.latitude;
-
-  const lon = position.coords.longitude;
-
-  const speedMS = position.coords.speed || 0;
-
-  const speedKMH = speedMS * 3.6;
-
-
-  // عرض السرعة
-  document.getElementById("speed").innerText =
-    speedKMH.toFixed(1);
-
-
-  // حساب المسافة
-  if (lastPosition) {
-
-    const distance =
-      calculateDistance(
-        lastPosition.lat,
-        lastPosition.lon,
-        lat,
-        lon
-      );
-
-    // تجاهل القفزات الغريبة
-    if (distance < 0.1) {
-      totalDistance += distance;
-    }
-
-  }
-
-  lastPosition = {
-    lat: lat,
-    lon: lon
-  };
-
-
-  document.getElementById("distance").innerText =
-    totalDistance.toFixed(2);
-
-
-  // تحريك المؤشر
-  if (!marker) {
-
-    marker = L.marker([lat, lon])
-      .addTo(map)
-      .bindPopup("🛴 السكوتر");
-
-  } else {
-
-    marker.setLatLng([lat, lon]);
-
-  }
-
-
-  // تحريك الخريطة
-  map.setView(
-    [lat, lon],
-    17
-  );
-
-
-  document.getElementById("radarStatus").innerText =
-    "📡 الرادار يعمل";
-
-}
-
-
-// حساب المسافة بين نقطتين
-function calculateDistance(
-  lat1,
-  lon1,
-  lat2,
-  lon2
-) {
-
-  const R = 6371;
-
-  const dLat =
-    (lat2 - lat1) * Math.PI / 180;
-
-  const dLon =
-    (lon2 - lon1) * Math.PI / 180;
-
-  const a =
-    Math.sin(dLat / 2) *
-    Math.sin(dLat / 2) +
-
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
-
-  const c =
-    2 * Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a)
-    );
-
-  return R * c;
-
-}
-
-
-// إيقاف الرحلة
-document.getElementById("stop").onclick = function () {
-
-  running = false;
-
-  if (watchID !== null) {
-
-    navigator.geolocation.clearWatch(
-      watchID
-    );
-
-    watchID = null;
-
-  }
-
-  document.getElementById("status").innerText =
-    "🔴 الرحلة متوقفة";
-
-  document.getElementById("radarStatus").innerText =
-    "الرادار متوقف";
-
-  document.getElementById("speed").innerText =
-    "0";
-
-};
-
-
-// خطأ GPS
-function locationError(error) {
-
-  document.getElementById("status").innerText =
-    "⚠️ تعذر الحصول على موقع GPS";
-
-  console.log(error);
-
-}
-
-</script>
-
-</body>
-</html>
+<div class="card">
+<small>⏱️ مدة
