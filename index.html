@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Scooter GPS</title>
 
@@ -74,6 +78,7 @@ button{
     color:white;
     font-size:18px;
     font-weight:bold;
+    cursor:pointer;
 }
 
 #start{
@@ -199,7 +204,6 @@ button{
     text-align:center;
 
     font-weight:bold;
-
 }
 
 #radarDistance{
@@ -207,7 +211,9 @@ button{
 }
 
 </style>
+
 </head>
+
 
 <body>
 
@@ -215,6 +221,8 @@ button{
 
 <h1>🛴 Scooter GPS</h1>
 
+
+<!-- السرعة -->
 
 <div class="box">
 
@@ -233,6 +241,8 @@ button{
 </div>
 
 
+<!-- أعلى سرعة -->
+
 <div class="box">
 
 <span class="label">
@@ -249,6 +259,8 @@ button{
 
 </div>
 
+
+<!-- المتوسط -->
 
 <div class="box">
 
@@ -267,6 +279,8 @@ button{
 </div>
 
 
+<!-- المسافة -->
+
 <div class="box">
 
 <span class="label">
@@ -284,6 +298,8 @@ button{
 </div>
 
 
+<!-- الوقت -->
+
 <div class="box">
 
 <span class="label">
@@ -297,20 +313,49 @@ button{
 </div>
 
 
+<!-- درجة الحرارة -->
+
+<div class="box">
+
+<span class="label">
+🌡️ درجة الحرارة
+</span>
+
+<span class="value" id="temperature">
+--
+</span>
+
+<span class="unit">
+درجة مئوية
+</span>
+
+</div>
+
+
+<!-- الأزرار -->
+
 <div class="buttons">
 
-<button id="start">
+<button
+id="start"
+type="button">
 ▶ تشغيل
 </button>
 
-<button id="stop">
+<button
+id="stop"
+type="button">
 ■ غلق
 </button>
 
 </div>
 
 
-<button id="bluetooth">
+<!-- Bluetooth -->
+
+<button
+id="bluetooth"
+type="button">
 🔵 اتصال Bluetooth
 </button>
 
@@ -352,50 +397,85 @@ button{
 </div>
 
 
+<!-- الخريطة -->
+
 <div class="map-title">
 🗺️ خريطة الموقع والرادارات
 </div>
 
-
 <div id="map"></div>
 
+
+<!-- المعلومات -->
 
 <div class="info">
 
 <div class="row">
-<span>📍 خط العرض</span>
-<strong id="latitude">--</strong>
+
+<span>
+📍 خط العرض
+</span>
+
+<strong id="latitude">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>📍 خط الطول</span>
-<strong id="longitude">--</strong>
+
+<span>
+📍 خط الطول
+</span>
+
+<strong id="longitude">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>🧭 الاتجاه</span>
-<strong id="direction">--</strong>
+
+<span>
+🧭 الاتجاه
+</span>
+
+<strong id="direction">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>🚨 أقرب رادار</span>
-<strong id="nearestRadar">--</strong>
-</div>
+
+<span>
+🚨 أقرب رادار
+</span>
+
+<strong id="nearestRadar">
+--
+</strong>
 
 </div>
 
 </div>
 
+</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+
+<script
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 </script>
 
 
 <script>
 
-/* ===================================
+/* =====================================
    الخريطة
-=================================== */
+===================================== */
 
 const map =
 L.map("map").setView(
@@ -413,9 +493,9 @@ L.tileLayer(
 ).addTo(map);
 
 
-/* ===================================
+/* =====================================
    سهم السكوتر
-=================================== */
+===================================== */
 
 const arrowIcon =
 L.divIcon({
@@ -435,9 +515,9 @@ L.divIcon({
 let scooterMarker = null;
 
 
-/* ===================================
+/* =====================================
    خط الرحلة
-=================================== */
+===================================== */
 
 let routePoints = [];
 
@@ -453,46 +533,27 @@ L.polyline(
 ).addTo(map);
 
 
-/* ===================================
+/* =====================================
    بيانات الرادارات
-===================================
 
-ضع هنا بيانات الرادارات الحقيقية
-بالشكل التالي:
-
-{
-    lat: رقم خط العرض,
-    lon: رقم خط الطول,
-    limit: الحد الأقصى للسرعة
-}
-
-مثال فقط وليس رادارًا حقيقيًا:
-
-{
-    lat: 31.2001,
-    lon: 29.9187,
-    limit: 30
-}
-
-لا تستخدم المثال كموقع رادار حقيقي.
-=================================== */
+   ضع البيانات الحقيقية هنا
+===================================== */
 
 const radarData = [
 
     /*
+    مثال فقط:
+
     {
-        lat: 0,
-        lon: 0,
-        limit: 30
+        lat:31.2001,
+        lon:29.9187,
+        limit:30
     }
+
     */
 
 ];
 
-
-/* ===================================
-   رسم الرادارات على الخريطة
-=================================== */
 
 const radarIcon =
 L.divIcon({
@@ -534,6 +595,7 @@ function drawRadars(){
                 "🚨 رادار سرعة" +
                 "<br>" +
                 "الحد الأقصى: " +
+
                 (
                     radar.limit
                     ?
@@ -546,8 +608,11 @@ function drawRadars(){
 
 
             radarMarkers.push({
+
                 marker:marker,
+
                 data:radar
+
             });
 
         }
@@ -559,9 +624,9 @@ function drawRadars(){
 drawRadars();
 
 
-/* ===================================
+/* =====================================
    المتغيرات
-=================================== */
+===================================== */
 
 let running = false;
 
@@ -581,15 +646,12 @@ let speedTotal = 0;
 
 let speedCount = 0;
 
-
-/* Bluetooth */
-
 let bluetoothDevice = null;
 
 
-/* ===================================
-   عناصر الصفحة
-=================================== */
+/* =====================================
+   العناصر
+===================================== */
 
 const currentSpeed =
 document.getElementById(
@@ -614,6 +676,11 @@ document.getElementById(
 const time =
 document.getElementById(
     "time"
+);
+
+const temperature =
+document.getElementById(
+    "temperature"
 );
 
 const status =
@@ -662,9 +729,9 @@ document.getElementById(
 );
 
 
-/* ===================================
-   تشغيل
-=================================== */
+/* =====================================
+   تشغيل الرحلة
+===================================== */
 
 document.getElementById("start")
 .onclick = function(){
@@ -704,15 +771,20 @@ document.getElementById("start")
     routeLine.setLatLngs([]);
 
 
-    currentSpeed.textContent = "0.0";
+    currentSpeed.textContent =
+    "0.0";
 
-    maxSpeed.textContent = "0.0";
+    maxSpeed.textContent =
+    "0.0";
 
-    averageSpeed.textContent = "0.0";
+    averageSpeed.textContent =
+    "0.0";
 
-    distance.textContent = "0.00";
+    distance.textContent =
+    "0.00";
 
-    time.textContent = "00:00:00";
+    time.textContent =
+    "00:00:00";
 
 
     status.textContent =
@@ -746,9 +818,9 @@ document.getElementById("start")
 };
 
 
-/* ===================================
+/* =====================================
    GPS
-=================================== */
+===================================== */
 
 function updateGPS(position){
 
@@ -814,7 +886,7 @@ function updateGPS(position){
     ).toFixed(1);
 
 
-    /* المسافة */
+    /* حساب المسافة */
 
     if(lastPosition){
 
@@ -843,14 +915,18 @@ function updateGPS(position){
 
 
     lastPosition = {
+
         lat:lat,
         lon:lon
+
     };
 
 
     distance.textContent =
     totalDistance.toFixed(2);
 
+
+    /* الإحداثيات */
 
     latitude.textContent =
     lat.toFixed(6);
@@ -880,7 +956,7 @@ function updateGPS(position){
     }
 
 
-    /* إنشاء السهم */
+    /* السهم */
 
     if(!scooterMarker){
 
@@ -924,7 +1000,7 @@ function updateGPS(position){
     );
 
 
-    /* فحص الرادار */
+    /* الرادار */
 
     checkNearestRadar(
         lat,
@@ -932,12 +1008,120 @@ function updateGPS(position){
         speed
     );
 
+
+    /* الطقس */
+
+    getWeather(
+        lat,
+        lon
+    );
+
 }
 
 
-/* ===================================
-   فحص أقرب رادار
-=================================== */
+/* =====================================
+   درجة الحرارة
+===================================== */
+
+let lastWeatherTime = 0;
+
+
+async function getWeather(
+    lat,
+    lon
+){
+
+    /*
+    لا نطلب الطقس مع كل تحديث GPS.
+    ننتظر دقيقة بين كل طلب.
+    */
+
+    const now =
+    Date.now();
+
+
+    if(
+        now - lastWeatherTime <
+        60000
+    ){
+
+        return;
+
+    }
+
+
+    lastWeatherTime =
+    now;
+
+
+    try{
+
+        const url =
+
+        "https://api.open-meteo.com/v1/forecast" +
+
+        "?latitude=" +
+        encodeURIComponent(lat) +
+
+        "&longitude=" +
+        encodeURIComponent(lon) +
+
+        "&current=temperature_2m" +
+
+        "&temperature_unit=celsius";
+
+
+        const response =
+        await fetch(url);
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Weather error"
+            );
+
+        }
+
+
+        const data =
+        await response.json();
+
+
+        if(
+            data.current &&
+            Number.isFinite(
+                data.current.temperature_2m
+            )
+        ){
+
+            temperature.textContent =
+
+            data.current.temperature_2m
+            .toFixed(1);
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Weather:",
+            error
+        );
+
+        temperature.textContent =
+        "--";
+
+    }
+
+}
+
+
+/* =====================================
+   الرادار
+===================================== */
 
 function checkNearestRadar(
     lat,
@@ -1007,9 +1191,7 @@ function checkNearestRadar(
 
 
     if(!closest){
-
         return;
-
     }
 
 
@@ -1018,11 +1200,6 @@ function checkNearestRadar(
         closestDistance
     ) + " متر";
 
-
-    /*
-    تنبيه عندما يكون الرادار
-    على بعد 500 متر أو أقل
-    */
 
     if(
         closestDistance <= 500
@@ -1033,27 +1210,17 @@ function checkNearestRadar(
 
 
         radarDistance.textContent =
-        Math.max(
-            0,
-            Math.round(
-                closestDistance
-            )
+        Math.round(
+            closestDistance
         );
 
 
-        if(
-            closest.limit
-        ){
+        if(closest.limit){
 
             radarLimit.textContent =
             closest.limit +
             " كم/س";
 
-
-            /*
-            تنبيه إضافي إذا السرعة
-            الحالية أعلى من الحد
-            */
 
             if(
                 currentSpeed >
@@ -1061,7 +1228,7 @@ function checkNearestRadar(
             ){
 
                 status.textContent =
-                "⚠️ خفّض السرعة — أنت فوق الحد المعلن";
+                "⚠️ خفّض السرعة";
 
             }
 
@@ -1072,9 +1239,7 @@ function checkNearestRadar(
 
         }
 
-    }
-
-    else{
+    }else{
 
         radarAlert.style.display =
         "none";
@@ -1084,9 +1249,9 @@ function checkNearestRadar(
 }
 
 
-/* ===================================
+/* =====================================
    تدوير السهم
-=================================== */
+===================================== */
 
 function rotateArrow(
     degrees
@@ -1111,9 +1276,9 @@ function rotateArrow(
 }
 
 
-/* ===================================
+/* =====================================
    الاتجاه
-=================================== */
+===================================== */
 
 function getDirection(
     degrees
@@ -1142,9 +1307,9 @@ function getDirection(
 }
 
 
-/* ===================================
+/* =====================================
    حساب المسافة
-=================================== */
+===================================== */
 
 function calculateDistance(
 
@@ -1207,9 +1372,9 @@ function calculateDistance(
 }
 
 
-/* ===================================
+/* =====================================
    الوقت
-=================================== */
+===================================== */
 
 function updateTime(){
 
@@ -1258,9 +1423,9 @@ function updateTime(){
 }
 
 
-/* ===================================
-   إيقاف
-=================================== */
+/* =====================================
+   إيقاف الرحلة
+===================================== */
 
 document.getElementById("stop")
 .onclick = function(){
@@ -1300,9 +1465,9 @@ document.getElementById("stop")
 };
 
 
-/* ===================================
+/* =====================================
    Bluetooth
-=================================== */
+===================================== */
 
 document.getElementById("bluetooth")
 .onclick =
@@ -1383,9 +1548,9 @@ async function(){
 };
 
 
-/* ===================================
-   خطأ GPS
-=================================== */
+/* =====================================
+   أخطاء GPS
+===================================== */
 
 function gpsError(error){
 
