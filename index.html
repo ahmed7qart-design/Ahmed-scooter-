@@ -1,70 +1,288 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>ZIP إلى APK</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #111;
-      color: white;
-      text-align: center;
-      padding: 50px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سكوتر GPS</title>
 
-    .card {
-      background: #222;
-      padding: 30px;
-      border-radius: 20px;
-      max-width: 400px;
-      margin: auto;
-    }
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    button {
-      background: #00c853;
-      color: white;
-      border: 0;
-      padding: 15px 25px;
-      border-radius: 12px;
-      font-size: 18px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    input {
-      margin: 20px;
-    }
-  </style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+}
+
+.header {
+  text-align: center;
+  padding: 15px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.stats {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+
+.card {
+  flex: 1;
+  background: #222;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+}
+
+.number {
+  display: block;
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+#map {
+  height: 55vh;
+  width: 100%;
+}
+
+.buttons {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  border-radius: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#start {
+  background: #00c853;
+  color: white;
+}
+
+#stop {
+  background: #d50000;
+  color: white;
+}
+
+.radar {
+  margin: 10px;
+  padding: 15px;
+  background: #222;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.radar-circle {
+  margin: auto;
+  width: 180px;
+  height: 180px;
+  border: 2px solid #00ff88;
+  border-radius: 50%;
+  position: relative;
+  background:
+    radial-gradient(circle,
+    transparent 20%,
+    rgba(0,255,136,.08) 21%,
+    transparent 22%);
+}
+
+.radar-line {
+  position: absolute;
+  width: 2px;
+  height: 50%;
+  background: #00ff88;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom;
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.status {
+  text-align: center;
+  padding: 8px;
+  color: #aaa;
+}
+</style>
 </head>
 
 <body>
+
+<div class="header">
+  🛴 Scooter GPS
+</div>
+
+<div class="stats">
+
   <div class="card">
-    <h2>تحويل ZIP إلى APK</h2>
-
-    <input type="file" id="zipFile" accept=".zip">
-
-    <br>
-
-    <button onclick="convert()">
-      تحويل إلى APK
-    </button>
-
-    <p id="status"></p>
+    السرعة
+    <span class="number" id="speed">0</span>
+    كم/س
   </div>
 
-  <script>
-    function convert() {
-      const file = document.getElementById("zipFile").files[0];
-      const status = document.getElementById("status");
+  <div class="card">
+    المسافة
+    <span class="number" id="distance">0.00</span>
+    كم
+  </div>
 
-      if (!file) {
-        status.textContent = "اختار ملف ZIP الأول";
-        return;
-      }
+</div>
 
-      status.textContent =
-        "تم اختيار الملف. تحويل APK يحتاج Android Build وليس مجرد تغيير الامتداد.";
+<div id="map"></div>
+
+<div class="buttons">
+  <button id="start">▶ بدء الرحلة</button>
+  <button id="stop">■ إيقاف</button>
+</div>
+
+<div class="status" id="status">
+  الرحلة متوقفة
+</div>
+
+<div class="radar">
+  <h3>📡 الرادار الأمامي</h3>
+
+  <div class="radar-circle">
+    <div class="radar-line"></div>
+  </div>
+
+  <p id="radarStatus">
+    الرادار في وضع الاستعداد
+  </p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+let map;
+let marker;
+
+let watchID = null;
+
+let running = false;
+
+let lastPosition = null;
+
+let totalDistance = 0;
+
+// إنشاء الخريطة
+map = L.map("map").setView([31.2001, 29.9187], 15);
+
+// خريطة OpenStreetMap
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap"
+  }
+).addTo(map);
+
+
+// بدء الرحلة
+document.getElementById("start").onclick = function () {
+
+  if (!navigator.geolocation) {
+    alert("الموبايل لا يدعم GPS");
+    return;
+  }
+
+  running = true;
+
+  totalDistance = 0;
+
+  lastPosition = null;
+
+  document.getElementById("distance").innerText = "0.00";
+
+  document.getElementById("status").innerText =
+    "🟢 الرحلة بدأت...";
+
+  watchID = navigator.geolocation.watchPosition(
+
+    updateLocation,
+
+    locationError,
+
+    {
+      enableHighAccuracy: true,
+      maximumAge: 1000,
+      timeout: 10000
     }
-  </script>
-</body>
-</html>
+
+  );
+
+};
+
+
+// تحديث الموقع
+function updateLocation(position) {
+
+  if (!running) return;
+
+  const lat = position.coords.latitude;
+
+  const lon = position.coords.longitude;
+
+  const speedMS = position.coords.speed || 0;
+
+  const speedKMH = speedMS * 3.6;
+
+
+  // عرض السرعة
+  document.getElementById("speed").innerText =
+    speedKMH.toFixed(1);
+
+
+  // حساب المسافة
+  if (lastPosition) {
+
+    const distance =
+      calculateDistance(
+        lastPosition.lat,
+        lastPosition.lon,
+        lat,
+        lon
+      );
+
+    // تجاهل القفزات الغريبة
+    if (distance < 0.1) {
+      totalDistance += distance;
+    }
+
+  }
+
+  lastPosition = {
+    lat: lat,
+    lon: lon
+  };
+
+
+  document.getElementById("distance").innerText =
+    totalDistance.toFixed(2);
+
+
+  // تحريك المؤشر
+  if (!marker) {
+
+    marker = L.marker([lat, lon])
+      .addTo(map)
+      .bindPopup
