@@ -6,11 +6,10 @@
 
   <title>AHMED SCOOTER</title>
 
-  <!-- Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  >
 
   <style>
     * {
@@ -23,6 +22,7 @@
       background: #080808;
       color: white;
       font-family: Arial, sans-serif;
+
       display: flex;
       justify-content: center;
       align-items: center;
@@ -31,208 +31,144 @@
     .app {
       width: 92%;
       max-width: 430px;
-      text-align: center;
       padding: 20px 0;
+      text-align: center;
     }
 
     h1 {
-      margin: 0 0 10px;
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 18px;
     }
 
     #status {
-      margin: 15px 0;
-      font-size: 18px;
+      background: #151515;
+      border-radius: 14px;
+      padding: 13px;
+      margin-bottom: 12px;
+      font-size: 17px;
     }
 
     button {
       width: 100%;
-      padding: 16px;
-      margin: 8px 0;
       border: 0;
       border-radius: 14px;
+      padding: 16px;
+      margin: 7px 0;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    #connect {
+    #locationBtn {
       background: #1877f2;
       color: white;
     }
 
-    #location {
-      background: #222;
-      color: white;
-    }
-
-    #services {
-      margin-top: 15px;
-      padding: 12px;
-      background: #151515;
-      border-radius: 14px;
-      text-align: left;
-      direction: ltr;
-      max-height: 180px;
-      overflow-y: auto;
-      font-size: 12px;
-      word-break: break-all;
+    #locationBtn:active {
+      transform: scale(0.98);
     }
 
     #map {
       width: 100%;
-      height: 260px;
+      height: 280px;
       margin-top: 15px;
-      border-radius: 16px;
+      border-radius: 18px;
       overflow: hidden;
       border: 2px solid #222;
+    }
+
+    .info {
+      background: #151515;
+      border-radius: 14px;
+      padding: 13px;
+      margin-top: 12px;
+      color: #ccc;
+      font-size: 14px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <h1>🛴 AHMED SCOOTER</h1>
+    <h1>🛴 AHMED SCOOTER</h1>
 
-  <div id="status">
-    🔴 Bluetooth غير متصل
+    <div class="subtitle">
+      نظام متابعة السكوتر
+    </div>
+
+    <div id="status">
+      📍 الموقع غير محدد
+    </div>
+
+    <button id="locationBtn">
+      📍 تحديد موقعي
+    </button>
+
+    <div id="map"></div>
+
+    <div class="info">
+      الخريطة تعمل بشكل مستقل ولا تحتاج إلى Bluetooth.
+    </div>
+
   </div>
 
-  <button id="connect">
-    🔵 اكتشاف Bluetooth
-  </button>
 
-  <button id="location">
-    📍 تحديد موقعي
-  </button>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <div id="map"></div>
+  <script>
 
-  <div id="services">
-    لم يتم اكتشاف خدمات Bluetooth بعد.
-  </div>
+    const statusBox =
+      document.getElementById("status");
 
-</div>
+    const locationBtn =
+      document.getElementById("locationBtn");
 
 
-<!-- Leaflet -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    // إنشاء الخريطة
+    const map =
+      L.map("map").setView(
+        [31.2001, 29.9187],
+        13
+      );
 
 
-<script>
-
-let device = null;
-let server = null;
-
-const statusBox =
-  document.getElementById("status");
-
-const servicesBox =
-  document.getElementById("services");
-
-const connectBtn =
-  document.getElementById("connect");
-
-const locationBtn =
-  document.getElementById("location");
+    // خريطة OpenStreetMap
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          "&copy; OpenStreetMap contributors"
+      }
+    ).addTo(map);
 
 
-// ==========================
-// Bluetooth
-// ==========================
-
-connectBtn.addEventListener("click", async () => {
-
-  if (!navigator.bluetooth) {
-
-    statusBox.textContent =
-      "❌ جهازك لا يدعم Web Bluetooth";
-
-    return;
-  }
-
-  try {
-
-    statusBox.textContent =
-      "🟡 اختر جهاز Bluetooth...";
-
-    device =
-      await navigator.bluetooth.requestDevice({
-
-        acceptAllDevices: true,
-
-        optionalServices: [
-          "battery_service",
-          "device_information"
-        ]
-
-      });
+    let marker = null;
 
 
-    statusBox.textContent =
-      "🟡 جاري الاتصال بـ " +
-      (device.name || "جهاز غير معروف");
+    // تحديد الموقع
+    locationBtn.addEventListener(
+      "click",
+      () => {
+
+        if (!navigator.geolocation) {
+
+          statusBox.textContent =
+            "❌ تحديد الموقع غير مدعوم";
+
+          return;
+        }
 
 
-    device.addEventListener(
-      "gattserverdisconnected",
-      disconnected
-    );
+        statusBox.textContent =
+          "🟡 جاري تحديد موقعك...";
 
 
-    server =
-      await device.gatt.connect();
-
-
-    statusBox.textContent =
-      "🟢 متصل بـ " +
-      (device.name || "جهاز غير معروف");
-
-
-    servicesBox.textContent =
-      "🔍 جاري قراءة خدمات Bluetooth...";
-
-
-    const services =
-      await server.getPrimaryServices();
-
-
-    servicesBox.innerHTML = "";
-
-
-    if (services.length === 0) {
-
-      servicesBox.textContent =
-        "⚠️ لم يتم العثور على خدمات GATT.";
-
-      return;
-    }
-
-
-    services.forEach(service => {
-
-      const line =
-        document.createElement("div");
-
-      line.textContent =
-        "Service: " + service.uuid;
-
-      servicesBox.appendChild(line);
-
-    });
-
-
-    servicesBox.innerHTML +=
-      "<br>⚠️ لم يتم إرسال أي أوامر تحكم للسكوتر.";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    statusBox.textContent =
-      "🔴 لم يتم الاتصال";
-
-    servicesBox.textContent =
-      "السبب: "
+       
