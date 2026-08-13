@@ -4,347 +4,245 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Scooter GPS</title>
+<title>Scooter Speed</title>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
 
 body{
     margin:0;
-    background:#070b10;
-    color:white;
+    background:#ffffff;
+    color:#111111;
     font-family:Arial,sans-serif;
 }
 
-header{
-    padding:18px;
+.app{
+    width:100%;
+    max-width:500px;
+    margin:auto;
+    padding:25px 18px;
+}
+
+h1{
     text-align:center;
-    font-size:25px;
-    font-weight:bold;
+    margin:5px 0 25px;
+    font-size:30px;
 }
 
-.status{
-    margin:10px;
-    padding:12px;
-    border-radius:14px;
-    background:#151b24;
-    text-align:center;
-    color:#b9c1cc;
-}
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    padding:10px;
-}
-
-.card{
-    background:#151b24;
-    border-radius:18px;
-    padding:16px;
+.box{
+    background:#f5f5f5;
+    border:1px solid #dddddd;
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:12px;
     text-align:center;
 }
 
-.card.big{
-    grid-column:1 / -1;
-}
-
-.title{
-    color:#9ca6b3;
-    font-size:14px;
+.label{
+    display:block;
+    color:#666;
+    font-size:16px;
+    margin-bottom:8px;
 }
 
 .value{
     display:block;
-    margin-top:8px;
-    font-size:29px;
+    font-size:42px;
     font-weight:bold;
 }
 
-.big .value{
-    font-size:58px;
+.unit{
+    color:#777;
+    font-size:14px;
 }
 
 .buttons{
     display:flex;
-    gap:10px;
-    padding:10px;
+    gap:12px;
+    margin-top:20px;
 }
 
 button{
     flex:1;
-    padding:17px;
-    border:0;
-    border-radius:16px;
+    height:60px;
+    border:none;
+    border-radius:18px;
     color:white;
-    font-size:18px;
+    font-size:20px;
     font-weight:bold;
+    cursor:pointer;
 }
 
 #start{
-    background:#00a86b;
+    background:#19a463;
 }
 
 #stop{
-    background:#d93636;
+    background:#e53935;
 }
 
-.mapBox{
-    margin:10px;
-    height:360px;
-    border-radius:20px;
-    overflow:hidden;
-    position:relative;
-    background:#18212c;
-}
-
-#map{
-    width:100%;
-    height:100%;
-}
-
-.mapMessage{
-    position:absolute;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+#status{
     text-align:center;
-    padding:30px;
-    color:#aeb8c5;
-    pointer-events:none;
-}
-
-.scooter{
-    position:absolute;
-    width:25px;
-    height:25px;
-    background:#00ff88;
-    border-radius:50%;
-    border:4px solid white;
-    transform:translate(-50%,-50%);
-    display:none;
-    z-index:10;
-}
-
-.radarBox{
-    margin:10px;
-    padding:20px;
-    background:#151b24;
-    border-radius:20px;
-    text-align:center;
-}
-
-.radar{
-    width:220px;
-    height:220px;
-    margin:auto;
-    border:2px solid #00ff88;
-    border-radius:50%;
-    position:relative;
-    background:
-    radial-gradient(circle,
-    transparent 19%,
-    #00ff8815 20%,
-    transparent 21%,
-    transparent 39%,
-    #00ff8815 40%,
-    transparent 41%,
-    transparent 59%,
-    #00ff8815 60%,
-    transparent 61%);
-}
-
-.radar:before{
-    content:"";
-    position:absolute;
-    left:50%;
-    top:0;
-    width:1px;
-    height:100%;
-    background:#00ff8850;
-}
-
-.radar:after{
-    content:"";
-    position:absolute;
-    top:50%;
-    left:0;
-    width:100%;
-    height:1px;
-    background:#00ff8850;
-}
-
-.scan{
-    position:absolute;
-    width:3px;
-    height:50%;
-    background:#00ff88;
-    left:50%;
-    bottom:50%;
-    transform-origin:bottom;
-    animation:scan 2s linear infinite;
-}
-
-.center{
-    position:absolute;
-    width:14px;
-    height:14px;
-    background:#00ff88;
-    border-radius:50%;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    z-index:3;
-}
-
-.car{
-    position:absolute;
-    width:13px;
-    height:13px;
-    background:#ff4141;
-    border-radius:50%;
-    box-shadow:0 0 12px #ff4141;
-}
-
-@keyframes scan{
-    from{
-        transform:rotate(0deg);
-    }
-
-    to{
-        transform:rotate(360deg);
-    }
+    margin-top:18px;
+    font-size:16px;
+    color:#666;
 }
 
 .info{
-    margin:10px;
-    padding:15px;
-    background:#151b24;
+    margin-top:15px;
+    background:#f5f5f5;
     border-radius:18px;
+    padding:15px;
 }
 
 .row{
     display:flex;
     justify-content:space-between;
-    padding:11px 0;
-    border-bottom:1px solid #29313d;
+    padding:10px 0;
+    border-bottom:1px solid #ddd;
 }
 
 .row:last-child{
-    border-bottom:0;
+    border-bottom:none;
 }
-
 </style>
 </head>
 
 <body>
 
-<header>
-🛴 Scooter GPS
-</header>
+<div class="app">
 
-<div class="status" id="status">
-🔴 الرحلة متوقفة
-</div>
+<h1>🛴 Scooter GPS</h1>
 
-<div class="cards">
+<!-- السرعة الحالية -->
+<div class="box">
 
-    <div class="card big">
-        <span class="title">السرعة الحالية</span>
-        <span class="value" id="speed">0.0</span>
-        <span class="title">كم / ساعة</span>
-    </div>
+<span class="label">
+السرعة الحالية
+</span>
 
-    <div class="card">
-        <span class="title">🏁 أعلى سرعة</span>
-        <span class="value" id="maxSpeed">0.0</span>
-        <span class="title">كم / ساعة</span>
-    </div>
+<span class="value" id="currentSpeed">
+0.0
+</span>
 
-    <div class="card">
-        <span class="title">📊 متوسط السرعة</span>
-        <span class="value" id="avgSpeed">0.0</span>
-        <span class="title">كم / ساعة</span>
-    </div>
-
-    <div class="card">
-        <span class="title">🛣️ المسافة</span>
-        <span class="value" id="distance">0.00</span>
-        <span class="title">كم</span>
-    </div>
-
-    <div class="card">
-        <span class="title">⏱️ مدة الرحلة</span>
-        <span class="value" id="time">00:00:00</span>
-    </div>
+<span class="unit">
+كم / ساعة
+</span>
 
 </div>
 
+
+<!-- أعلى سرعة -->
+<div class="box">
+
+<span class="label">
+أعلى سرعة
+</span>
+
+<span class="value" id="maxSpeed">
+0.0
+</span>
+
+<span class="unit">
+كم / ساعة
+</span>
+
+</div>
+
+
+<!-- متوسط السرعة -->
+<div class="box">
+
+<span class="label">
+متوسط السرعة
+</span>
+
+<span class="value" id="averageSpeed">
+0.0
+</span>
+
+<span class="unit">
+كم / ساعة
+</span>
+
+</div>
+
+
+<!-- المسافة -->
+<div class="box">
+
+<span class="label">
+المسافة المقطوعة
+</span>
+
+<span class="value" id="distance">
+0.00
+</span>
+
+<span class="unit">
+كيلومتر
+</span>
+
+</div>
+
+
+<!-- مدة الرحلة -->
+<div class="box">
+
+<span class="label">
+مدة الرحلة
+</span>
+
+<span class="value" id="time">
+00:00:00
+</span>
+
+</div>
+
+
+<!-- الأزرار -->
 <div class="buttons">
 
-    <button id="start">
-        ▶ بدء الرحلة
-    </button>
+<button id="start">
+▶ تشغيل
+</button>
 
-    <button id="stop">
-        ■ إيقاف
-    </button>
-
-</div>
-
-<div class="mapBox">
-
-    <div id="map"></div>
-
-    <div class="mapMessage" id="mapMessage">
-        🗺️ الخريطة هتظهر هنا عند تشغيل خدمة الخرائط
-    </div>
-
-    <div class="scooter" id="scooter"></div>
+<button id="stop">
+■ غلق
+</button>
 
 </div>
 
+
+<div id="status">
+الرحلة متوقفة
+</div>
+
+
+<!-- معلومات GPS -->
 <div class="info">
 
-    <div class="row">
-        <span>🧭 الاتجاه</span>
-        <strong id="direction">--</strong>
-    </div>
+<div class="row">
+<span>خط العرض</span>
+<strong id="latitude">--</strong>
+</div>
 
-    <div class="row">
-        <span>📍 خط العرض</span>
-        <strong id="lat">--</strong>
-    </div>
+<div class="row">
+<span>خط الطول</span>
+<strong id="longitude">--</strong>
+</div>
 
-    <div class="row">
-        <span>📍 خط الطول</span>
-        <strong id="lon">--</strong>
-    </div>
+<div class="row">
+<span>الاتجاه</span>
+<strong id="direction">--</strong>
+</div>
 
 </div>
 
-<div class="radarBox">
-
-    <h2>📡 الرادار الأمامي</h2>
-
-    <div class="radar" id="radar">
-
-        <div class="scan"></div>
-
-        <div class="center"></div>
-
-    </div>
-
-    <p id="radarText">
-        الرادار متوقف
-    </p>
-
 </div>
+
 
 <script>
 
@@ -360,58 +258,47 @@ let lastPosition = null;
 
 let totalDistance = 0;
 
-let maxSpeed = 0;
+let maximumSpeed = 0;
 
 let speedTotal = 0;
 
-let speedSamples = 0;
+let speedCount = 0;
 
 
 /* عناصر الصفحة */
 
-const startButton =
-document.getElementById("start");
+const currentSpeed =
+document.getElementById("currentSpeed");
 
-const stopButton =
-document.getElementById("stop");
+const maxSpeed =
+document.getElementById("maxSpeed");
+
+const averageSpeed =
+document.getElementById("averageSpeed");
+
+const distance =
+document.getElementById("distance");
+
+const time =
+document.getElementById("time");
 
 const status =
 document.getElementById("status");
 
-const speedElement =
-document.getElementById("speed");
+const latitude =
+document.getElementById("latitude");
 
-const maxSpeedElement =
-document.getElementById("maxSpeed");
+const longitude =
+document.getElementById("longitude");
 
-const avgSpeedElement =
-document.getElementById("avgSpeed");
-
-const distanceElement =
-document.getElementById("distance");
-
-const timeElement =
-document.getElementById("time");
-
-const directionElement =
+const direction =
 document.getElementById("direction");
 
-const latElement =
-document.getElementById("lat");
 
-const lonElement =
-document.getElementById("lon");
+/* تشغيل */
 
-const scooter =
-document.getElementById("scooter");
-
-const radarText =
-document.getElementById("radarText");
-
-
-/* بدء الرحلة */
-
-startButton.addEventListener("click", function(){
+document.getElementById("start").onclick =
+function(){
 
     if(running){
         return;
@@ -420,48 +307,50 @@ startButton.addEventListener("click", function(){
     if(!navigator.geolocation){
 
         status.textContent =
-        "⚠️ جهازك لا يدعم GPS";
+        "GPS غير مدعوم في الجهاز";
 
         return;
     }
 
+
     running = true;
-
-    totalDistance = 0;
-
-    maxSpeed = 0;
-
-    speedTotal = 0;
-
-    speedSamples = 0;
-
-    lastPosition = null;
 
     startTime = Date.now();
 
-    speedElement.textContent = "0.0";
+    lastPosition = null;
 
-    maxSpeedElement.textContent = "0.0";
+    totalDistance = 0;
 
-    avgSpeedElement.textContent = "0.0";
+    maximumSpeed = 0;
 
-    distanceElement.textContent = "0.00";
+    speedTotal = 0;
 
-    timeElement.textContent = "00:00:00";
+    speedCount = 0;
+
+
+    currentSpeed.textContent = "0.0";
+
+    maxSpeed.textContent = "0.0";
+
+    averageSpeed.textContent = "0.0";
+
+    distance.textContent = "0.00";
+
+    time.textContent = "00:00:00";
+
 
     status.textContent =
-    "🟢 الرحلة بدأت";
+    "🟢 الرحلة تعمل";
 
-    radarText.textContent =
-    "📡 الرادار يعمل";
 
     timerID =
-    setInterval(updateTimer,1000);
+    setInterval(updateTime,1000);
+
 
     watchID =
     navigator.geolocation.watchPosition(
 
-        updateLocation,
+        updateGPS,
 
         gpsError,
 
@@ -473,21 +362,22 @@ startButton.addEventListener("click", function(){
 
     );
 
-});
+};
 
 
-/* قراءة GPS */
+/* GPS */
 
-function updateLocation(position){
+function updateGPS(position){
 
     if(!running){
         return;
     }
 
-    const latitude =
+
+    const lat =
     position.coords.latitude;
 
-    const longitude =
+    const lon =
     position.coords.longitude;
 
 
@@ -495,72 +385,81 @@ function updateLocation(position){
     position.coords.speed;
 
 
+    /*
+    بعض الهواتف لا ترسل السرعة.
+    */
+
     if(
         speed === null ||
+        speed === undefined ||
         !Number.isFinite(speed) ||
         speed < 0
     ){
+
         speed = 0;
+
     }
 
 
-    speed =
-    speed * 3.6;
+    /* من متر/ثانية إلى كم/ساعة */
+
+    speed = speed * 3.6;
 
 
-    /* السرعة */
-
-    speedElement.textContent =
+    currentSpeed.textContent =
     speed.toFixed(1);
 
 
-    if(speed > maxSpeed){
+    /* أعلى سرعة */
 
-        maxSpeed = speed;
+    if(speed > maximumSpeed){
+
+        maximumSpeed = speed;
 
     }
 
-    maxSpeedElement.textContent =
-    maxSpeed.toFixed(1);
+    maxSpeed.textContent =
+    maximumSpeed.toFixed(1);
 
+
+    /* المتوسط */
 
     speedTotal += speed;
 
-    speedSamples++;
+    speedCount++;
 
 
-    avgSpeedElement.textContent =
-    (speedTotal / speedSamples).toFixed(1);
+    const avg =
+    speedTotal / speedCount;
+
+
+    averageSpeed.textContent =
+    avg.toFixed(1);
 
 
     /* المسافة */
 
     if(lastPosition !== null){
 
-        const currentDistance =
+        const d =
         calculateDistance(
 
-            lastPosition.latitude,
-            lastPosition.longitude,
+            lastPosition.lat,
+            lastPosition.lon,
 
-            latitude,
-            longitude
+            lat,
+            lon
 
         );
 
 
         /*
-        نتجاهل القفزات الكبيرة
-        الناتجة عن GPS غير الدقيق.
+        تجاهل قفزات GPS الغريبة.
         */
 
-        if(
-            currentDistance >= 0 &&
-            currentDistance < 0.2
-        ){
+        if(d >= 0 && d < 0.2){
 
-            totalDistance +=
-            currentDistance;
+            totalDistance += d;
 
         }
 
@@ -568,25 +467,22 @@ function updateLocation(position){
 
 
     lastPosition = {
-
-        latitude:latitude,
-
-        longitude:longitude
-
+        lat:lat,
+        lon:lon
     };
 
 
-    distanceElement.textContent =
+    distance.textContent =
     totalDistance.toFixed(2);
 
 
     /* الموقع */
 
-    latElement.textContent =
-    latitude.toFixed(6);
+    latitude.textContent =
+    lat.toFixed(6);
 
-    lonElement.textContent =
-    longitude.toFixed(6);
+    longitude.textContent =
+    lon.toFixed(6);
 
 
     /* الاتجاه */
@@ -596,37 +492,10 @@ function updateLocation(position){
         Number.isFinite(position.coords.heading)
     ){
 
-        directionElement.textContent =
-        getDirection(
-            position.coords.heading
-        );
+        direction.textContent =
+        getDirection(position.coords.heading);
 
     }
-
-
-    /*
-    عرض مؤشر السكوتر
-    داخل الخريطة كواجهة.
-    */
-
-    moveScooter();
-
-
-}
-
-
-/* تحريك مؤشر السكوتر */
-
-function moveScooter(){
-
-    scooter.style.display =
-    "block";
-
-    /*
-    حركة تجريبية للواجهة.
-    عند ربط خريطة حقيقية يتم وضع
-    المؤشر حسب إحداثيات GPS.
-    */
 
 }
 
@@ -650,22 +519,29 @@ function calculateDistance(
     (lon2-lon1) *
     Math.PI / 180;
 
+
     const a =
+
     Math.sin(dLat/2) *
-    Math.sin(dLat/2) +
+    Math.sin(dLat/2)
+
+    +
 
     Math.cos(lat1*Math.PI/180) *
-    Math.cos(lat2*Math.PI/180) *
+    Math.cos(lat2*Math.PI/180)
+
+    *
 
     Math.sin(dLon/2) *
     Math.sin(dLon/2);
 
+
     const c =
-    2 *
-    Math.atan2(
+    2 * Math.atan2(
         Math.sqrt(a),
         Math.sqrt(1-a)
     );
+
 
     return R*c;
 
@@ -679,25 +555,20 @@ function getDirection(degrees){
     const directions = [
 
         "شمال",
-
         "شمال شرق",
-
         "شرق",
-
         "جنوب شرق",
-
         "جنوب",
-
         "جنوب غرب",
-
         "غرب",
-
         "شمال غرب"
 
     ];
 
+
     const index =
-    Math.round(degrees/45) % 8;
+    Math.round(degrees / 45) % 8;
+
 
     return directions[index];
 
@@ -706,29 +577,34 @@ function getDirection(degrees){
 
 /* الوقت */
 
-function updateTimer(){
+function updateTime(){
 
     if(!running){
         return;
     }
 
-    const elapsed =
+
+    const seconds =
     Math.floor(
         (Date.now()-startTime)/1000
     );
 
+
     const hours =
-    Math.floor(elapsed/3600);
+    Math.floor(seconds/3600);
+
 
     const minutes =
     Math.floor(
-        (elapsed%3600)/60
+        (seconds%3600)/60
     );
 
-    const seconds =
-    elapsed%60;
 
-    timeElement.textContent =
+    const secs =
+    seconds%60;
+
+
+    time.textContent =
 
     String(hours).padStart(2,"0")
     + ":" +
@@ -736,20 +612,23 @@ function updateTimer(){
     String(minutes).padStart(2,"0")
     + ":" +
 
-    String(seconds).padStart(2,"0");
+    String(secs).padStart(2,"0");
 
 }
 
 
-/* إيقاف الرحلة */
+/* غلق */
 
-stopButton.addEventListener("click",function(){
+document.getElementById("stop").onclick =
+function(){
 
     if(!running){
         return;
     }
 
+
     running = false;
+
 
     if(watchID !== null){
 
@@ -761,6 +640,7 @@ stopButton.addEventListener("click",function(){
 
     }
 
+
     if(timerID !== null){
 
         clearInterval(timerID);
@@ -769,85 +649,52 @@ stopButton.addEventListener("click",function(){
 
     }
 
-    speedElement.textContent =
+
+    currentSpeed.textContent =
     "0.0";
 
+
     status.textContent =
-    "🔴 الرحلة انتهت";
+    "🔴 الرحلة متوقفة";
 
-    radarText.textContent =
-    "الرادار متوقف";
-
-});
+};
 
 
 /* خطأ GPS */
 
 function gpsError(error){
 
-    let message =
-    "⚠️ تعذر الوصول إلى GPS";
-
     if(error.code === 1){
 
-        message =
-        "⚠️ اسمح للموقع بالوصول إلى GPS";
+        status.textContent =
+        "⚠️ اسمح للتطبيق باستخدام الموقع";
 
     }
 
-    if(error.code === 2){
+    else if(error.code === 2){
 
-        message =
-        "⚠️ موقع GPS غير متاح";
+        status.textContent =
+        "⚠️ تعذر تحديد الموقع";
 
     }
 
-    if(error.code === 3){
+    else if(error.code === 3){
 
-        message =
+        status.textContent =
         "⚠️ انتهت مهلة GPS";
 
     }
 
-    status.textContent =
-    message;
+    else{
 
-}
-
-
-/*
-الرادار التجريبي:
-هذه نقاط تجريبية فقط وليست
-سيارات حقيقية.
-*/
-
-function createDemoCars(){
-
-    const radar =
-    document.getElementById("radar");
-
-    for(let i=0;i<4;i++){
-
-        const car =
-        document.createElement("div");
-
-        car.className = "car";
-
-        car.style.left =
-        (25 + Math.random()*50) + "%";
-
-        car.style.top =
-        (20 + Math.random()*45) + "%";
-
-        radar.appendChild(car);
+        status.textContent =
+        "⚠️ حدث خطأ في GPS";
 
     }
 
 }
 
-createDemoCars();
-
 </script>
 
 </body>
- </html>
+    </html>
