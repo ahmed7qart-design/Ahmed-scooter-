@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>AHMED SCOOTER</title>
 
   <link
@@ -22,26 +21,23 @@
       background: #080808;
       color: white;
       font-family: Arial, sans-serif;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .app {
       width: 92%;
       max-width: 430px;
-      padding: 20px 0;
+      margin: auto;
+      padding: 25px 0;
       text-align: center;
     }
 
     h1 {
-      margin: 0 0 8px;
+      margin: 5px 0;
       font-size: 28px;
     }
 
     .subtitle {
-      color: #aaa;
+      color: #999;
       margin-bottom: 18px;
     }
 
@@ -55,10 +51,10 @@
 
     button {
       width: 100%;
-      border: 0;
-      border-radius: 14px;
       padding: 16px;
       margin: 7px 0;
+      border: 0;
+      border-radius: 14px;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
@@ -69,7 +65,17 @@
       color: white;
     }
 
-    #locationBtn:active {
+    #startBtn {
+      background: #16a34a;
+      color: white;
+    }
+
+    #bluetoothBtn {
+      background: #673ab7;
+      color: white;
+    }
+
+    button:active {
       transform: scale(0.98);
     }
 
@@ -82,93 +88,104 @@
       border: 2px solid #222;
     }
 
-    .info {
+    #services {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
       background: #151515;
       border-radius: 14px;
-      padding: 13px;
-      margin-top: 12px;
-      color: #ccc;
-      font-size: 14px;
+      text-align: left;
+      direction: ltr;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 12px;
+      word-break: break-all;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="app">
 
-    <h1>🛴 AHMED SCOOTER</h1>
+  <h1>🛴 AHMED SCOOTER</h1>
 
-    <div class="subtitle">
-      نظام متابعة السكوتر
-    </div>
-
-    <div id="status">
-      📍 الموقع غير محدد
-    </div>
-
-    <button id="locationBtn">
-      📍 تحديد موقعي
-    </button>
-
-    <div id="map"></div>
-
-    <div class="info">
-      الخريطة تعمل بشكل مستقل ولا تحتاج إلى Bluetooth.
-    </div>
-
+  <div class="subtitle">
+    نظام متابعة السكوتر
   </div>
 
+  <div id="status">
+    📍 الموقع غير محدد
+  </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <button id="locationBtn">
+    📍 تحديد موقعي
+  </button>
 
-  <script>
+  <div id="map"></div>
 
-    const statusBox =
-      document.getElementById("status");
+  <button id="startBtn">
+    🚀 بدء الرحلة
+  </button>
 
-    const locationBtn =
-      document.getElementById("locationBtn");
+  <button id="bluetoothBtn">
+    🔵 اتصال Bluetooth
+  </button>
 
+  <div id="services">
+    لم يتم الاتصال بعد.
+  </div>
 
-    // إنشاء الخريطة
-    const map =
-      L.map("map").setView(
-        [31.2001, 29.9187],
-        13
-      );
+</div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    // خريطة OpenStreetMap
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          "&copy; OpenStreetMap contributors"
-      }
-    ).addTo(map);
+<script>
 
+const statusBox =
+  document.getElementById("status");
 
-    let marker = null;
+const locationBtn =
+  document.getElementById("locationBtn");
 
+const startBtn =
+  document.getElementById("startBtn");
 
-    // تحديد الموقع
-    locationBtn.addEventListener(
-      "click",
-      () => {
+const bluetoothBtn =
+  document.getElementById("bluetoothBtn");
 
-        if (!navigator.geolocation) {
-
-          statusBox.textContent =
-            "❌ تحديد الموقع غير مدعوم";
-
-          return;
-        }
+const servicesBox =
+  document.getElementById("services");
 
 
-        statusBox.textContent =
-          "🟡 جاري تحديد موقعك...";
+// ==========================
+// الخريطة
+// ==========================
+
+const map =
+  L.map("map").setView(
+    [31.2001, 29.9187],
+    13
+  );
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution:
+      "&copy; OpenStreetMap contributors"
+  }
+).addTo(map);
+
+let marker = null;
 
 
-       
+// ==========================
+// تحديد الموقع
+// ==========================
+
+locationBtn.addEventListener(
+  "click",
+  () => {
+
+    if (!
