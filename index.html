@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AHMED SCOOTER</title>
 
 <link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 />
 
 <style>
@@ -69,8 +68,12 @@ button {
   margin-top: 10px;
 }
 
-button:active {
-  transform: scale(.98);
+#locationBtn {
+  background: #1877f2;
+}
+
+#locationBtn.ok {
+  background: #16a34a;
 }
 
 .status {
@@ -92,34 +95,49 @@ button:active {
 .map-title {
   text-align: center;
   color: #aaa;
+  font-size: 16px;
   margin-bottom: 10px;
 }
 
 #map {
   width: 100%;
-  height: 260px;
+  height: 300px;
+  min-height: 300px;
   border-radius: 14px;
+  overflow: hidden;
+  background: #222;
 }
 
-/* سهم الموقع */
+/* السهم */
 
 .scooter-arrow {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: transparent;
-  border: none;
+  border: 0;
 }
 
-.scooter-arrow div {
-  color: #1683ff;
-  font-size: 36px;
-  font-weight: bold;
-  text-shadow:
-    0 0 3px white,
-    0 0 8px #1683ff;
-  transition: transform 0.15s linear;
+.scooter-arrow span {
+  display: block;
+
+  width: 0;
+  height: 0;
+
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-bottom: 32px solid #1683ff;
+
+  filter:
+    drop-shadow(0 0 3px white)
+    drop-shadow(0 0 7px #1683ff);
 }
 
 </style>
-
 </head>
 
 <body>
@@ -148,6 +166,10 @@ button:active {
   <div class="value" id="calories">0 kcal</div>
 </div>
 
+<button id="locationBtn">
+  📍 السماح بالموقع
+</button>
+
 <div class="map-card">
 
   <div class="map-title">
@@ -158,7 +180,7 @@ button:active {
 
 </div>
 
-<button id="startBtn" onclick="toggleRide()">
+<button id="startBtn">
   ▶️ ابدأ الرحلة
 </button>
 
@@ -169,7 +191,7 @@ button:active {
 </div>
 
 <script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 </script>
 
 <script>
@@ -183,25 +205,28 @@ let totalDistance = 0;
 let startTime = 0;
 let timer = null;
 
-let userMarker = null;
+let locationAllowed = false;
 
-/* اتجاه البوصلة */
-let compassHeading = 0;
+let userMarker = null;
 
 
 /* =========================
-   الخريطة
+   إنشاء الخريطة
 ========================= */
 
-const map = L.map("map").setView(
+const map = L.map("map", {
+  zoomControl: true
+}).setView(
   [31.2001, 29.9187],
   13
 );
+
 
 L.tileLayer(
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
+
     attribution:
       "&copy; OpenStreetMap contributors"
   }
@@ -209,29 +234,26 @@ L.tileLayer(
 
 
 /* =========================
-   سهم الموقع
+   أيقونة السهم
 ========================= */
 
-function createArrowIcon(heading) {
+function createArrow() {
 
   return L.divIcon({
 
-    className:
-      "scooter-arrow",
+    className: "scooter-arrow",
 
     html:
-      `<div style="transform:rotate(${heading}deg)">
-        ▲
-      </div>`,
+      '<span></span>',
 
     iconSize: [
-      40,
-      40
+      42,
+      42
     ],
 
     iconAnchor: [
-      20,
-      20
+      21,
+      21
     ]
 
   });
@@ -240,142 +262,163 @@ function createArrowIcon(heading) {
 
 
 /* =========================
-   البوصلة
+   زر السماح بالموقع
 ========================= */
 
-function updateCompass(event) {
-
-  let heading = null;
-
-
-  /*
-    أجهزة iPhone / Safari
-  */
-
-  if (
-    typeof event.webkitCompassHeading ===
-    "number"
-  ) {
-
-    heading =
-      event.webkitCompassHeading;
-
-  }
-
-
-  /*
-    Android وبعض المتصفحات
-  */
-
-  else if (
-    typeof event.alpha ===
-    "number"
-  ) {
-
-    heading =
-      360 - event.alpha;
-
-  }
-
-
-  if (
-    heading === null ||
-    isNaN(heading)
-  ) {
-
-    return;
-
-  }
-
-
-  compassHeading =
-    heading;
-
-
-  /*
-    لف السهم فورًا
-  */
-
-  if (userMarker) {
-
-    userMarker.setIcon(
-      createArrowIcon(
-        compassHeading
-      )
-    );
-
-  }
-
-}
-
-
-/*
-  مستشعر اتجاه الهاتف
-*/
-
-window.addEventListener(
-  "deviceorientationabsolute",
-  updateCompass,
-  true
-);
-
-window.addEventListener(
-  "deviceorientation",
-  updateCompass,
-  true
+document
+.getElementById("locationBtn")
+.addEventListener(
+  "click",
+  requestLocation
 );
 
 
-/* =========================
-   الرحلة
-========================= */
-
-function toggleRide() {
-
-  if (!running) {
-
-    startRide();
-
-  } else {
-
-    stopRide();
-
-  }
-
-}
-
-
-function startRide() {
+function requestLocation() {
 
   if (!navigator.geolocation) {
 
+    document.getElementById("status")
+      .textContent =
+      "❌ جهازك لا يدعم GPS";
+
+    return;
+  }
+
+
+  document.getElementById("status")
+    .textContent =
+    "🟡 جاري تحديد موقعك...";
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      locationAllowed = true;
+
+
+      document.getElementById(
+        "locationBtn"
+      ).textContent =
+        "✅ تم السماح بالموقع";
+
+
+      document.getElementById(
+        "locationBtn"
+      ).classList.add("ok");
+
+
+      updateMap(position);
+
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "🟢 الموقع جاهز";
+
+    },
+
+    function() {
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "⚠️ اسمح للموقع من إعدادات الهاتف";
+
+    },
+
+    {
+      enableHighAccuracy: true,
+
+      timeout: 15000,
+
+      maximumAge: 0
+    }
+
+  );
+
+}
+
+
+/* =========================
+   زر الرحلة
+========================= */
+
+document
+.getElementById("startBtn")
+.addEventListener(
+  "click",
+  toggleRide
+);
+
+
+function toggleRide() {
+
+  if (running) {
+
+    stopRide();
+
+  } else {
+
+    startRide();
+
+  }
+
+}
+
+
+/* =========================
+   بدء الرحلة
+========================= */
+
+function startRide() {
+
+  if (!locationAllowed) {
+
     alert(
-      "المتصفح لا يدعم GPS"
+      "اضغط أولًا على «السماح بالموقع»"
     );
 
     return;
-
   }
 
 
   running = true;
 
-  totalDistance = 0;
-
   lastPosition = null;
+
+  totalDistance = 0;
 
   startTime = Date.now();
 
 
-  document.getElementById(
-    "startBtn"
-  ).innerHTML =
+  document.getElementById("speed")
+    .textContent =
+    "0.0 km/h";
+
+
+  document.getElementById("distance")
+    .textContent =
+    "0.00 km";
+
+
+  document.getElementById("time")
+    .textContent =
+    "00:00";
+
+
+  document.getElementById("calories")
+    .textContent =
+    "0 kcal";
+
+
+  document.getElementById("startBtn")
+    .textContent =
     "⏹️ إيقاف الرحلة";
 
 
-  document.getElementById(
-    "status"
-  ).innerHTML =
+  document.getElementById("status")
+    .textContent =
     "🟢 الرحلة تعمل";
 
 
@@ -391,12 +434,19 @@ function startRide() {
 
       updateLocation,
 
-      locationError,
+      function() {
+
+        document.getElementById(
+          "status"
+        ).textContent =
+        "⚠️ تعذر تحديث الموقع";
+
+      },
 
       {
         enableHighAccuracy: true,
 
-        maximumAge: 1000,
+        maximumAge: 500,
 
         timeout: 10000
       }
@@ -407,47 +457,13 @@ function startRide() {
 
 
 /* =========================
-   إيقاف الرحلة
-========================= */
-
-function stopRide() {
-
-  running = false;
-
-
-  if (watchId !== null) {
-
-    navigator.geolocation.clearWatch(
-      watchId
-    );
-
-    watchId = null;
-
-  }
-
-
-  clearInterval(timer);
-
-
-  document.getElementById(
-    "startBtn"
-  ).innerHTML =
-    "▶️ ابدأ الرحلة";
-
-
-  document.getElementById(
-    "status"
-  ).innerHTML =
-    "🔴 الرحلة متوقفة";
-
-}
-
-
-/* =========================
-   تحديث GPS
+   تحديث الموقع
 ========================= */
 
 function updateLocation(position) {
+
+  updateMap(position);
+
 
   const lat =
     position.coords.latitude;
@@ -455,10 +471,6 @@ function updateLocation(position) {
   const lon =
     position.coords.longitude;
 
-
-  /*
-    السرعة
-  */
 
   const speed =
     position.coords.speed;
@@ -469,20 +481,17 @@ function updateLocation(position) {
     speed >= 0
   ) {
 
-    document.getElementById(
-      "speed"
-    ).innerHTML =
-      (speed * 3.6).toFixed(1) +
+    document.getElementById("speed")
+      .textContent =
+      (
+        speed * 3.6
+      ).toFixed(1) +
       " km/h";
 
   }
 
 
-  /*
-    المسافة
-  */
-
-  if (lastPosition) {
+  if (lastPosition !== null) {
 
     const distance =
       calculateDistance(
@@ -506,11 +515,11 @@ function updateLocation(position) {
 
       document.getElementById(
         "distance"
-      ).innerHTML =
-        (
-          totalDistance / 1000
-        ).toFixed(2) +
-        " km";
+      ).textContent =
+      (
+        totalDistance / 1000
+      ).toFixed(2) +
+      " km";
 
 
       const calories =
@@ -521,9 +530,9 @@ function updateLocation(position) {
 
       document.getElementById(
         "calories"
-      ).innerHTML =
-        calories.toFixed(0) +
-        " kcal";
+      ).textContent =
+      calories.toFixed(0) +
+      " kcal";
 
     }
 
@@ -538,18 +547,11 @@ function updateLocation(position) {
 
   };
 
-
-  /*
-    تحريك الخريطة والسهم
-  */
-
-  updateMap(position);
-
 }
 
 
 /* =========================
-   الخريطة والسهم
+   تحريك السهم والخريطة
 ========================= */
 
 function updateMap(position) {
@@ -561,63 +563,44 @@ function updateMap(position) {
     position.coords.longitude;
 
 
-  /*
-    الخريطة تتحرك مع الموقع
-  */
-
   map.setView(
-
-    [lat, lon],
-
+    [
+      lat,
+      lon
+    ],
     17,
-
     {
       animate: true
     }
-
   );
 
 
-  /*
-    إنشاء السهم
-  */
-
-  if (!userMarker) {
+  if (userMarker === null) {
 
     userMarker =
       L.marker(
-
-        [lat, lon],
-
+        [
+          lat,
+          lon
+        ],
         {
-          icon:
-            createArrowIcon(
-              compassHeading
-            )
+          icon: createArrow()
         }
-
-      ).addTo(map);
-
-  }
+      )
+      .addTo(map);
 
 
-  /*
-    تحريك السهم
-  */
-
-  else {
-
-    userMarker.setLatLng(
-      [lat, lon]
+    userMarker.bindPopup(
+      "📍 أنت هنا"
     );
 
+  } else {
 
-    userMarker.setIcon(
-
-      createArrowIcon(
-        compassHeading
-      )
-
+    userMarker.setLatLng(
+      [
+        lat,
+        lon
+      ]
     );
 
   }
@@ -632,20 +615,16 @@ function updateMap(position) {
 function updateTime() {
 
   if (!running) {
-
     return;
-
   }
 
 
   const seconds =
     Math.floor(
-
       (
         Date.now() -
         startTime
       ) / 1000
-
     );
 
 
@@ -659,9 +638,8 @@ function updateTime() {
     seconds % 60;
 
 
-  document.getElementById(
-    "time"
-  ).innerHTML =
+  document.getElementById("time")
+    .textContent =
 
     String(minutes)
       .padStart(2, "0") +
@@ -685,13 +663,13 @@ function calculateDistance(
   lon2
 ) {
 
-  const R =
-    6371000;
+  const R = 6371000;
 
 
   const dLat =
     (
-      lat2 - lat1
+      lat2 -
+      lat1
     ) *
     Math.PI /
     180;
@@ -699,7 +677,8 @@ function calculateDistance(
 
   const dLon =
     (
-      lon2 - lon1
+      lon2 -
+      lon1
     ) *
     Math.PI /
     180;
@@ -737,11 +716,8 @@ function calculateDistance(
   const c =
     2 *
     Math.atan2(
-
       Math.sqrt(a),
-
       Math.sqrt(1 - a)
-
     );
 
 
@@ -751,15 +727,36 @@ function calculateDistance(
 
 
 /* =========================
-   خطأ GPS
+   إيقاف الرحلة
 ========================= */
 
-function locationError() {
+function stopRide() {
 
-  document.getElementById(
-    "status"
-  ).innerHTML =
-    "⚠️ لازم تسمح للتطبيق باستخدام الموقع";
+  running = false;
+
+
+  if (watchId !== null) {
+
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+
+    watchId = null;
+
+  }
+
+
+  clearInterval(timer);
+
+
+  document.getElementById("startBtn")
+    .textContent =
+    "▶️ ابدأ الرحلة";
+
+
+  document.getElementById("status")
+    .textContent =
+    "🔴 الرحلة متوقفة";
 
 }
 
