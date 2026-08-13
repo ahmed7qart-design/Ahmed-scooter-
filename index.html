@@ -79,7 +79,7 @@ button:active {
   margin: 15px;
 }
 
-/* الخريطة فقط */
+/* الخريطة */
 
 .map-card {
   background: #151515;
@@ -115,6 +115,7 @@ button:active {
   text-shadow:
     0 0 3px white,
     0 0 8px #1683ff;
+  transition: transform 0.15s linear;
 }
 
 </style>
@@ -147,8 +148,6 @@ button:active {
   <div class="value" id="calories">0 kcal</div>
 </div>
 
-<!-- الخريطة -->
-
 <div class="map-card">
 
   <div class="map-title">
@@ -169,11 +168,9 @@ button:active {
 
 </div>
 
-
 <script
   src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 </script>
-
 
 <script>
 
@@ -187,6 +184,9 @@ let startTime = 0;
 let timer = null;
 
 let userMarker = null;
+
+/* اتجاه البوصلة */
+let compassHeading = 0;
 
 
 /* =========================
@@ -240,6 +240,93 @@ function createArrowIcon(heading) {
 
 
 /* =========================
+   البوصلة
+========================= */
+
+function updateCompass(event) {
+
+  let heading = null;
+
+
+  /*
+    أجهزة iPhone / Safari
+  */
+
+  if (
+    typeof event.webkitCompassHeading ===
+    "number"
+  ) {
+
+    heading =
+      event.webkitCompassHeading;
+
+  }
+
+
+  /*
+    Android وبعض المتصفحات
+  */
+
+  else if (
+    typeof event.alpha ===
+    "number"
+  ) {
+
+    heading =
+      360 - event.alpha;
+
+  }
+
+
+  if (
+    heading === null ||
+    isNaN(heading)
+  ) {
+
+    return;
+
+  }
+
+
+  compassHeading =
+    heading;
+
+
+  /*
+    لف السهم فورًا
+  */
+
+  if (userMarker) {
+
+    userMarker.setIcon(
+      createArrowIcon(
+        compassHeading
+      )
+    );
+
+  }
+
+}
+
+
+/*
+  مستشعر اتجاه الهاتف
+*/
+
+window.addEventListener(
+  "deviceorientationabsolute",
+  updateCompass,
+  true
+);
+
+window.addEventListener(
+  "deviceorientation",
+  updateCompass,
+  true
+);
+
+
+/* =========================
    الرحلة
 ========================= */
 
@@ -260,4 +347,423 @@ function toggleRide() {
 
 function startRide() {
 
-  if (!navigator
+  if (!navigator.geolocation) {
+
+    alert(
+      "المتصفح لا يدعم GPS"
+    );
+
+    return;
+
+  }
+
+
+  running = true;
+
+  totalDistance = 0;
+
+  lastPosition = null;
+
+  startTime = Date.now();
+
+
+  document.getElementById(
+    "startBtn"
+  ).innerHTML =
+    "⏹️ إيقاف الرحلة";
+
+
+  document.getElementById(
+    "status"
+  ).innerHTML =
+    "🟢 الرحلة تعمل";
+
+
+  timer =
+    setInterval(
+      updateTime,
+      1000
+    );
+
+
+  watchId =
+    navigator.geolocation.watchPosition(
+
+      updateLocation,
+
+      locationError,
+
+      {
+        enableHighAccuracy: true,
+
+        maximumAge: 1000,
+
+        timeout: 10000
+      }
+
+    );
+
+}
+
+
+/* =========================
+   إيقاف الرحلة
+========================= */
+
+function stopRide() {
+
+  running = false;
+
+
+  if (watchId !== null) {
+
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+
+    watchId = null;
+
+  }
+
+
+  clearInterval(timer);
+
+
+  document.getElementById(
+    "startBtn"
+  ).innerHTML =
+    "▶️ ابدأ الرحلة";
+
+
+  document.getElementById(
+    "status"
+  ).innerHTML =
+    "🔴 الرحلة متوقفة";
+
+}
+
+
+/* =========================
+   تحديث GPS
+========================= */
+
+function updateLocation(position) {
+
+  const lat =
+    position.coords.latitude;
+
+  const lon =
+    position.coords.longitude;
+
+
+  /*
+    السرعة
+  */
+
+  const speed =
+    position.coords.speed;
+
+
+  if (
+    speed !== null &&
+    speed >= 0
+  ) {
+
+    document.getElementById(
+      "speed"
+    ).innerHTML =
+      (speed * 3.6).toFixed(1) +
+      " km/h";
+
+  }
+
+
+  /*
+    المسافة
+  */
+
+  if (lastPosition) {
+
+    const distance =
+      calculateDistance(
+
+        lastPosition.lat,
+
+        lastPosition.lon,
+
+        lat,
+
+        lon
+
+      );
+
+
+    if (distance < 100) {
+
+      totalDistance +=
+        distance;
+
+
+      document.getElementById(
+        "distance"
+      ).innerHTML =
+        (
+          totalDistance / 1000
+        ).toFixed(2) +
+        " km";
+
+
+      const calories =
+        (
+          totalDistance / 1000
+        ) * 35;
+
+
+      document.getElementById(
+        "calories"
+      ).innerHTML =
+        calories.toFixed(0) +
+        " kcal";
+
+    }
+
+  }
+
+
+  lastPosition = {
+
+    lat: lat,
+
+    lon: lon
+
+  };
+
+
+  /*
+    تحريك الخريطة والسهم
+  */
+
+  updateMap(position);
+
+}
+
+
+/* =========================
+   الخريطة والسهم
+========================= */
+
+function updateMap(position) {
+
+  const lat =
+    position.coords.latitude;
+
+  const lon =
+    position.coords.longitude;
+
+
+  /*
+    الخريطة تتحرك مع الموقع
+  */
+
+  map.setView(
+
+    [lat, lon],
+
+    17,
+
+    {
+      animate: true
+    }
+
+  );
+
+
+  /*
+    إنشاء السهم
+  */
+
+  if (!userMarker) {
+
+    userMarker =
+      L.marker(
+
+        [lat, lon],
+
+        {
+          icon:
+            createArrowIcon(
+              compassHeading
+            )
+        }
+
+      ).addTo(map);
+
+  }
+
+
+  /*
+    تحريك السهم
+  */
+
+  else {
+
+    userMarker.setLatLng(
+      [lat, lon]
+    );
+
+
+    userMarker.setIcon(
+
+      createArrowIcon(
+        compassHeading
+      )
+
+    );
+
+  }
+
+}
+
+
+/* =========================
+   الوقت
+========================= */
+
+function updateTime() {
+
+  if (!running) {
+
+    return;
+
+  }
+
+
+  const seconds =
+    Math.floor(
+
+      (
+        Date.now() -
+        startTime
+      ) / 1000
+
+    );
+
+
+  const minutes =
+    Math.floor(
+      seconds / 60
+    );
+
+
+  const sec =
+    seconds % 60;
+
+
+  document.getElementById(
+    "time"
+  ).innerHTML =
+
+    String(minutes)
+      .padStart(2, "0") +
+
+    ":" +
+
+    String(sec)
+      .padStart(2, "0");
+
+}
+
+
+/* =========================
+   حساب المسافة
+========================= */
+
+function calculateDistance(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+) {
+
+  const R =
+    6371000;
+
+
+  const dLat =
+    (
+      lat2 - lat1
+    ) *
+    Math.PI /
+    180;
+
+
+  const dLon =
+    (
+      lon2 - lon1
+    ) *
+    Math.PI /
+    180;
+
+
+  const a =
+
+    Math.sin(
+      dLat / 2
+    ) ** 2
+
+    +
+
+    Math.cos(
+      lat1 *
+      Math.PI /
+      180
+    )
+
+    *
+
+    Math.cos(
+      lat2 *
+      Math.PI /
+      180
+    )
+
+    *
+
+    Math.sin(
+      dLon / 2
+    ) ** 2;
+
+
+  const c =
+    2 *
+    Math.atan2(
+
+      Math.sqrt(a),
+
+      Math.sqrt(1 - a)
+
+    );
+
+
+  return R * c;
+
+}
+
+
+/* =========================
+   خطأ GPS
+========================= */
+
+function locationError() {
+
+  document.getElementById(
+    "status"
+  ).innerHTML =
+    "⚠️ لازم تسمح للتطبيق باستخدام الموقع";
+
+}
+
+</script>
+
+</body>
+</html>
