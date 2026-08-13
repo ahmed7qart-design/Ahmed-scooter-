@@ -3,149 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b1220">
-<title>LIX / WG TWO</title>
+<title>LIX / WG TWO - Scooter Monitor</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   font-family:Arial,sans-serif;
-  background:#080d16;
+  background:#08111f;
   color:#fff;
-  transition:.25s;
 }
-body.light{
-  background:#f2f4f8;
-  color:#111827;
-}
-button{
-  border:0;
-  cursor:pointer;
-  font-weight:bold;
-}
+
 header{
-  padding:18px;
+  padding:20px;
+  background:#101b2d;
+  border-bottom:1px solid #26364e;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  background:#111827;
-  border-bottom:1px solid #263244;
 }
-.light header{background:#fff;border-color:#ddd}
-.logo{font-size:20px;font-weight:bold}
-.sub{font-size:12px;color:#8b95a7;margin-top:5px}
-main{max-width:900px;margin:auto;padding:18px}
-.panel{
-  background:#111827;
-  border:1px solid #263244;
+
+h1{
+  margin:0;
+  font-size:21px;
+}
+
+.small{
+  color:#91a0b5;
+  font-size:13px;
+  margin-top:6px;
+}
+
+main{
+  width:min(900px,94%);
+  margin:auto;
+  padding:18px 0 40px;
+}
+
+.card{
+  background:#101b2d;
+  border:1px solid #26364e;
   border-radius:20px;
   padding:18px;
   margin-bottom:16px;
 }
-.light .panel{background:#fff;border-color:#ddd}
-.speedBox{text-align:center;padding:25px}
-.speed{
-  font-size:78px;
-  font-weight:900;
+
+.connection{
+  text-align:center;
+  padding:25px;
 }
-.unit{color:#8b95a7}
-.status{
-  margin-top:12px;
-  color:#8b95a7;
-}
+
 .dot{
+  width:12px;
+  height:12px;
   display:inline-block;
-  width:10px;height:10px;
   border-radius:50%;
   background:#ef4444;
   margin-left:6px;
 }
+
+.connected{
+  background:#22c55e;
+}
+
+.message{
+  display:none;
+  padding:15px;
+  border-radius:14px;
+  margin-bottom:16px;
+  background:#132b42;
+  border:1px solid #2563eb;
+  text-align:center;
+  font-weight:bold;
+}
+
+.speed{
+  text-align:center;
+  font-size:78px;
+  font-weight:900;
+}
+
+.unit{
+  text-align:center;
+  color:#91a0b5;
+}
+
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:12px;
 }
-.card{
-  padding:18px;
-  border-radius:17px;
-  background:#182234;
-}
-.light .card{background:#eef1f5}
-.cardTitle{color:#8b95a7;font-size:14px}
-.value{font-size:24px;font-weight:bold;margin-top:8px}
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:12px 0;
-  border-bottom:1px solid #263244;
-}
-.light .row{border-color:#ddd}
-.row:last-child{border:0}
-.btn{
-  padding:12px 16px;
-  border-radius:12px;
-  color:#fff;
-  background:#2563eb;
-}
-.green{background:#16a34a}
-.red{background:#dc2626}
-.gray{background:#374151}
-.bigBtns{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.map{
-  height:280px;
+
+.stat{
+  background:#17243a;
   border-radius:16px;
-  position:relative;
-  overflow:hidden;
-  background:
-    linear-gradient(25deg,transparent 47%,#667085 48%,#667085 52%,transparent 53%),
-    linear-gradient(-20deg,transparent 45%,#667085 46%,#667085 51%,transparent 52%),
-    #253044;
+  padding:18px;
 }
-.mapDot{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:48px;height:48px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
+
+.stat-title{
+  color:#91a0b5;
+  font-size:14px;
+}
+
+.stat-value{
+  margin-top:8px;
+  font-size:27px;
+  font-weight:bold;
+}
+
+button{
+  border:0;
+  color:white;
   background:#2563eb;
-  box-shadow:0 0 0 10px #2563eb33;
-  font-size:24px;
-}
-.log{
-  max-height:230px;
-  overflow:auto;
-  background:#080d16;
+  padding:13px 18px;
   border-radius:12px;
-  padding:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.5;
+}
+
+.full{
+  width:100%;
+  margin-top:12px;
+}
+
+.dataBox{
   direction:ltr;
   text-align:left;
+  background:#070d17;
+  padding:12px;
+  border-radius:12px;
+  max-height:280px;
+  overflow:auto;
   font-family:monospace;
   font-size:12px;
 }
-.light .log{background:#f2f4f8}
+
 .service{
-  padding:12px;
-  margin:8px 0;
-  background:#182234;
+  background:#17243a;
+  padding:13px;
   border-radius:12px;
+  margin-bottom:10px;
+  direction:ltr;
+  text-align:left;
 }
-.light .service{background:#eef1f5}
-.service small{color:#8b95a7}
-footer{text-align:center;color:#8b95a7;padding:10px 0 30px}
-@media(max-width:520px){
-  .speed{font-size:62px}
-  .grid{grid-template-columns:1fr 1fr}
-  .bigBtns{grid-template-columns:1fr}
+
+.char{
+  margin-top:9px;
+  padding:9px;
+  border-top:1px solid #33445c;
+}
+
+footer{
+  text-align:center;
+  color:#66758a;
+  padding:20px;
+}
+
+@media(max-width:500px){
+  .speed{
+    font-size:60px;
+  }
 }
 </style>
 </head>
@@ -154,655 +178,605 @@ footer{text-align:center;color:#8b95a7;padding:10px 0 30px}
 
 <header>
   <div>
-    <div class="logo">🛴 LIX / WG TWO</div>
-    <div class="sub" id="connectionText">غير متصل</div>
+    <h1>🛴 LIX / WG TWO</h1>
+    <div class="small" id="headerStatus">
+      غير متصل
+    </div>
   </div>
-  <button class="btn gray" onclick="toggleTheme()">🌙</button>
 </header>
 
 <main>
 
-<section class="panel speedBox">
-  <div class="speed"><span id="speed">0</span></div>
-  <div class="unit">كم/س</div>
+  <div id="message" class="message"></div>
 
-  <div class="status">
-    <span class="dot" id="dot"></span>
-    <span id="status">السكوتر غير متصل</span>
-  </div>
-</section>
+  <section class="card connection">
 
-<section class="grid">
-
-  <div class="card">
-    <div class="cardTitle">🔋 البطارية</div>
-    <div class="value" id="battery">--%</div>
-  </div>
-
-  <div class="card">
-    <div class="cardTitle">📏 المسافة</div>
-    <div class="value" id="distance">0.00 كم</div>
-  </div>
-
-  <div class="card">
-    <div class="cardTitle">⏱️ وقت الرحلة</div>
-    <div class="value" id="tripTime">00:00</div>
-  </div>
-
-  <div class="card">
-    <div class="cardTitle">📊 المتوسط</div>
-    <div class="value" id="average">0 كم/س</div>
-  </div>
-
-</section>
-
-<section class="panel">
-  <h3>📡 الاتصال</h3>
-
-  <div class="row">
     <div>
-      <b>Bluetooth</b>
-      <div class="sub" id="btStatus">غير متصل</div>
+      <span id="dot" class="dot"></span>
+      <span id="connectionStatus">
+        السكوتر غير متصل
+      </span>
     </div>
-    <button class="btn" onclick="connectBluetooth()">
-      اتصال
-    </button>
-  </div>
 
-  <div class="row">
-    <div>
-      <b>GPS</b>
-      <div class="sub" id="gpsStatus">غير مفعل</div>
+    <button
+      id="connectButton"
+      class="full"
+      onclick="connectScooter()">
+      🔵 الاتصال بالسكوتر
+    </button>
+
+  </section>
+
+  <section class="card">
+
+    <div class="speed">
+      <span id="speed">--</span>
     </div>
-    <button class="btn green" onclick="startGPS()">
-      تشغيل
-    </button>
-  </div>
-</section>
 
-<section class="panel">
-  <h3>🗺️ الموقع</h3>
+    <div class="unit">
+      السرعة كم/س
+    </div>
 
-  <div class="map">
-    <div class="mapDot">🛴</div>
-  </div>
+  </section>
 
-  <div class="sub" id="locationText">
-    لم يتم تحديد الموقع
-  </div>
-</section>
+  <section class="grid">
 
-<section class="panel">
-  <h3>▶️ الرحلة</h3>
+    <div class="stat">
+      <div class="stat-title">
+        🔋 البطارية
+      </div>
+      <div id="battery" class="stat-value">
+        --%
+      </div>
+    </div>
 
-  <div class="bigBtns">
-    <button class="btn green" onclick="startTrip()">
-      بدء الرحلة
-    </button>
+    <div class="stat">
+      <div class="stat-title">
+        📏 المسافة
+      </div>
+      <div id="distance" class="stat-value">
+        --
+      </div>
+    </div>
 
-    <button class="btn red" onclick="stopTrip()">
-      إيقاف الرحلة
-    </button>
-  </div>
-</section>
+    <div class="stat">
+      <div class="stat-title">
+        🌡️ بيانات إضافية
+      </div>
+      <div id="extra" class="stat-value">
+        --
+      </div>
+    </div>
 
-<section class="panel">
-  <h3>📋 الرحلات السابقة</h3>
-  <div id="history">
-    لا توجد رحلات محفوظة.
-  </div>
-</section>
+    <div class="stat">
+      <div class="stat-title">
+        📡 حالة الاتصال
+      </div>
+      <div id="link" class="stat-value">
+        غير متصل
+      </div>
+    </div>
 
-<section class="panel">
-  <h3>🔎 Bluetooth GATT</h3>
+  </section>
 
-  <div class="sub">
-    الخدمات والخصائص التي يسمح بها الجهاز ستظهر هنا.
-  </div>
+  <section class="card">
 
-  <div id="services">
-    لم يتم الاتصال بجهاز.
-  </div>
-</section>
+    <h3>📡 خدمات السكوتر</h3>
 
-<section class="panel">
-  <h3>🧪 سجل الاتصال</h3>
-  <div class="log" id="log"></div>
-</section>
+    <div class="small">
+      الخدمات والخصائص التي أعلنها جهاز Bluetooth.
+    </div>
+
+    <br>
+
+    <div id="services">
+      لم يتم الاتصال بعد.
+    </div>
+
+  </section>
+
+  <section class="card">
+
+    <h3>📥 البيانات المستلمة</h3>
+
+    <div id="dataLog" class="dataBox">
+      في انتظار الاتصال...
+    </div>
+
+  </section>
 
 </main>
 
 <footer>
-  LIX / WG TWO • Scooter Control
+  LIX / WG TWO Scooter Monitor
 </footer>
 
 <script>
+
 "use strict";
 
-/* =========================
-   بيانات البرنامج
-========================= */
+/* =====================================
+   المتغيرات
+===================================== */
 
-let bluetoothDevice = null;
-let gattServer = null;
+let device = null;
+let server = null;
 
-let tripRunning = false;
-let tripStart = 0;
-let timer = null;
+let logLines = [];
 
-let distance = 0;
-let speed = 0;
-let speedSamples = [];
+/* =====================================
+   عناصر الصفحة
+===================================== */
 
-let gpsWatch = null;
+const $ = id =>
+  document.getElementById(id);
 
-/* =========================
-   أدوات
-========================= */
+/* =====================================
+   الرسائل
+===================================== */
 
-const $ = id => document.getElementById(id);
+function showMessage(text){
 
-function log(message){
-  const box = $("log");
-  const time = new Date().toLocaleTimeString();
-  box.innerHTML +=
-    `[${time}] ${escapeHtml(message)}<br>`;
-  box.scrollTop = box.scrollHeight;
+  const box = $("message");
+
+  box.textContent = text;
+  box.style.display = "block";
 }
 
-function escapeHtml(text){
-  return String(text)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;");
-}
+/* =====================================
+   Log
+===================================== */
 
-function formatTime(seconds){
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
+function addLog(text){
 
-  return String(m).padStart(2,"0") +
-         ":" +
-         String(s).padStart(2,"0");
-}
+  const time =
+    new Date().toLocaleTimeString();
 
-function setConnectedUI(connected){
-
-  if(connected){
-    $("dot").style.background="#22c55e";
-    $("status").textContent="السكوتر متصل";
-    $("connectionText").textContent="Bluetooth متصل";
-  }else{
-    $("dot").style.background="#ef4444";
-    $("status").textContent="السكوتر غير متصل";
-    $("connectionText").textContent="غير متصل";
-  }
-}
-
-/* =========================
-   Dark / Light
-========================= */
-
-function toggleTheme(){
-
-  document.body.classList.toggle("light");
-
-  const light =
-    document.body.classList.contains("light");
-
-  localStorage.setItem(
-    "theme",
-    light ? "light" : "dark"
+  logLines.push(
+    "[" + time + "] " + text
   );
+
+  if(logLines.length > 200){
+    logLines.shift();
+  }
+
+  $("dataLog").textContent =
+    logLines.join("\n");
+
+  $("dataLog").scrollTop =
+    $("dataLog").scrollHeight;
 }
 
-if(localStorage.getItem("theme")==="light"){
-  document.body.classList.add("light");
-}
+/* =====================================
+   تحويل البيانات إلى HEX
+===================================== */
 
-/* =========================
-   Bluetooth
-========================= */
+function toHex(data){
 
-async function connectBluetooth(){
+  let result = [];
 
-  if(!("bluetooth" in navigator)){
-    alert(
-      "Web Bluetooth غير متاح في المتصفح الحالي."
+  for(let i=0;i<data.byteLength;i++){
+
+    result.push(
+      data.getUint8(i)
+        .toString(16)
+        .padStart(2,"0")
+        .toUpperCase()
     );
-    log("Bluetooth API غير متاح.");
+  }
+
+  return result.join(" ");
+}
+
+/* =====================================
+   تحويل البيانات إلى Decimal
+===================================== */
+
+function toDecimal(data){
+
+  let result = [];
+
+  for(let i=0;i<data.byteLength;i++){
+    result.push(data.getUint8(i));
+  }
+
+  return result.join(" ");
+}
+
+/* =====================================
+   Bluetooth
+===================================== */
+
+async function connectScooter(){
+
+  if(!navigator.bluetooth){
+
+    showMessage(
+      "❌ هذا المتصفح لا يدعم Web Bluetooth"
+    );
+
+    addLog(
+      "Web Bluetooth غير متاح."
+    );
+
     return;
   }
 
   try{
 
-    log("فتح نافذة اختيار Bluetooth...");
+    $("connectButton").disabled = true;
 
-    bluetoothDevice =
+    showMessage(
+      "🔵 اختر السكوتر من قائمة Bluetooth..."
+    );
+
+    addLog(
+      "فتح قائمة أجهزة Bluetooth."
+    );
+
+    device =
       await navigator.bluetooth.requestDevice({
+
         acceptAllDevices:true,
+
         optionalServices:[
           "battery_service",
           "device_information"
         ]
+
       });
 
-    log(
+    addLog(
       "تم اختيار الجهاز: " +
-      (bluetoothDevice.name || "بدون اسم")
+      (device.name || "بدون اسم")
     );
 
-    $("btStatus").textContent =
-      bluetoothDevice.name || "جهاز Bluetooth";
+    $("connectionStatus").textContent =
+      "تم اختيار السكوتر";
 
-    bluetoothDevice.addEventListener(
+    $("headerStatus").textContent =
+      device.name || "LIX / WG TWO";
+
+    device.addEventListener(
       "gattserverdisconnected",
-      onDisconnected
+      disconnected
     );
 
-    gattServer =
-      await bluetoothDevice.gatt.connect();
+    showMessage(
+      "🟡 تم العثور على السكوتر، جاري الاتصال..."
+    );
 
-    log("تم إنشاء اتصال GATT.");
+    server =
+      await device.gatt.connect();
 
-    setConnectedUI(true);
+    addLog(
+      "تم اتصال GATT."
+    );
 
-    await discoverServices();
+    setConnected();
+
+    showMessage(
+      "🟢 تم الاتصال، جاري نقل معلومات السكوتر..."
+    );
+
+    await scanServices();
+
+    await readStandardBattery();
+
+    showMessage(
+      "🟢 تم الاتصال بالسكوتر واستقبال البيانات المتاحة."
+    );
 
   }catch(error){
 
-    log("Bluetooth Error: " + error.message);
-
-    $("btStatus").textContent =
-      "فشل الاتصال";
-
-    setConnectedUI(false);
-  }
-}
-
-function onDisconnected(){
-
-  log("انقطع اتصال Bluetooth.");
-
-  $("btStatus").textContent =
-    "غير متصل";
-
-  setConnectedUI(false);
-}
-
-/* =========================
-   اكتشاف GATT
-========================= */
-
-async function discoverServices(){
-
-  if(!gattServer) return;
-
-  const container = $("services");
-
-  container.innerHTML = "";
-
-  try{
-
-    const services =
-      await gattServer.getPrimaryServices();
-
-    log(
-      "عدد الخدمات: " +
-      services.length
-    );
-
-    for(const service of services){
-
-      const serviceBox =
-        document.createElement("div");
-
-      serviceBox.className="service";
-
-      serviceBox.innerHTML =
-        "<b>Service</b><br>" +
-        "<small>" +
-        escapeHtml(service.uuid) +
-        "</small>";
-
-      container.appendChild(serviceBox);
-
-      try{
-
-        const chars =
-          await service.getCharacteristics();
-
-        for(const characteristic of chars){
-
-          const props =
-            characteristic.properties;
-
-          const propsText = [
-            props.read ? "read" : "",
-            props.write ? "write" : "",
-            props.writeWithoutResponse
-              ? "writeWithoutResponse" : "",
-            props.notify ? "notify" : "",
-            props.indicate ? "indicate" : ""
-          ].filter(Boolean).join(", ");
-
-          const charBox =
-            document.createElement("div");
-
-          charBox.style.marginTop="10px";
-
-          charBox.innerHTML =
-            "↳ <b>Characteristic</b><br>" +
-            "<small>" +
-            escapeHtml(characteristic.uuid) +
-            "</small><br>" +
-            "<small>Properties: " +
-            escapeHtml(propsText || "none") +
-            "</small>";
-
-          serviceBox.appendChild(charBox);
-
-          log(
-            "Characteristic: " +
-            characteristic.uuid +
-            " [" +
-            propsText +
-            "]"
-          );
-
-          /*
-            لو characteristic فيها notify،
-            نستطيع لاحقاً إضافة قراءة بيانات
-            السكوتر الحقيقية هنا بعد معرفة
-            البروتوكول الصحيح.
-          */
-        }
-
-      }catch(err){
-
-        log(
-          "تعذر قراءة خصائص الخدمة: " +
-          err.message
-        );
-      }
-    }
-
-  }catch(error){
-
-    log(
-      "تعذر اكتشاف خدمات GATT: " +
+    addLog(
+      "ERROR: " +
       error.message
     );
 
-    container.textContent =
-      "تعذر قراءة الخدمات.";
+    showMessage(
+      "❌ لم يتم الاتصال بالسكوتر."
+    );
+
+    setDisconnected();
+
+  }finally{
+
+    $("connectButton").disabled = false;
+
   }
 }
 
-/* =========================
-   GPS
-========================= */
+/* =====================================
+   حالة الاتصال
+===================================== */
 
-function startGPS(){
+function setConnected(){
 
-  if(!navigator.geolocation){
+  $("dot").classList.add("connected");
 
-    $("gpsStatus").textContent =
-      "GPS غير مدعوم";
+  $("connectionStatus").textContent =
+    "السكوتر متصل";
 
-    return;
-  }
+  $("link").textContent =
+    "متصل";
 
-  if(gpsWatch !== null){
-    return;
-  }
-
-  $("gpsStatus").textContent =
-    "يتم تحديد الموقع...";
-
-  gpsWatch =
-    navigator.geolocation.watchPosition(
-      position => {
-
-        const lat =
-          position.coords.latitude;
-
-        const lon =
-          position.coords.longitude;
-
-        $("gpsStatus").textContent =
-          "GPS يعمل";
-
-        $("locationText").textContent =
-          "Latitude: " +
-          lat.toFixed(6) +
-          " | Longitude: " +
-          lon.toFixed(6);
-
-      },
-      error => {
-
-        log(
-          "GPS Error: " +
-          error.message
-        );
-
-        $("gpsStatus").textContent =
-          "تعذر تحديد الموقع";
-      },
-      {
-        enableHighAccuracy:true,
-        maximumAge:1000,
-        timeout:10000
-      }
-    );
-
-  log("تم تشغيل GPS.");
 }
 
-/* =========================
-   الرحلة
-========================= */
+function setDisconnected(){
 
-function startTrip(){
+  $("dot").classList.remove("connected");
 
-  if(tripRunning) return;
+  $("connectionStatus").textContent =
+    "السكوتر غير متصل";
 
-  tripRunning = true;
-  tripStart = Date.now();
+  $("link").textContent =
+    "غير متصل";
 
-  distance = 0;
-  speedSamples = [];
-
-  $("status").textContent =
-    bluetoothDevice
-      ? "الرحلة تعمل"
-      : "الرحلة تعمل - بيانات تجريبية";
-
-  timer = setInterval(updateTrip,1000);
-
-  log("بدأت الرحلة.");
 }
 
-function updateTrip(){
+function disconnected(){
 
-  if(!tripRunning) return;
-
-  const elapsed =
-    Math.floor(
-      (Date.now() - tripStart) / 1000
-    );
-
-  /*
-    مؤقتاً بيانات تجريبية.
-    لن يتم اعتبارها سرعة السكوتر الحقيقية
-    حتى يتم تحديد characteristic الخاصة
-    بالبروتوكول.
-  */
-
-  speed =
-    Math.max(
-      0,
-      Math.round(
-        10 +
-        Math.sin(elapsed / 5) * 5
-      )
-    );
-
-  speedSamples.push(speed);
-
-  distance += speed / 3600;
-
-  $("speed").textContent = speed;
-
-  $("distance").textContent =
-    distance.toFixed(2) + " كم";
-
-  $("tripTime").textContent =
-    formatTime(elapsed);
-
-  const avg =
-    speedSamples.length
-      ? speedSamples.reduce((a,b)=>a+b,0) /
-        speedSamples.length
-      : 0;
-
-  $("average").textContent =
-    avg.toFixed(1) + " كم/س";
-}
-
-function stopTrip(){
-
-  if(!tripRunning) return;
-
-  tripRunning = false;
-
-  clearInterval(timer);
-
-  timer = null;
-
-  const elapsed =
-    Math.floor(
-      (Date.now() - tripStart) / 1000
-    );
-
-  saveTrip({
-    distance:distance,
-    time:elapsed,
-    average:
-      speedSamples.length
-        ? speedSamples.reduce((a,b)=>a+b,0) /
-          speedSamples.length
-        : 0
-  });
-
-  speed = 0;
-
-  $("speed").textContent = "0";
-
-  $("status").textContent =
-    bluetoothDevice
-      ? "السكوتر متصل"
-      : "السكوتر غير متصل";
-
-  log("انتهت الرحلة.");
-}
-
-/* =========================
-   حفظ الرحلات
-========================= */
-
-function saveTrip(trip){
-
-  let trips =
-    JSON.parse(
-      localStorage.getItem("scooterTrips") || "[]"
-    );
-
-  trips.unshift({
-    distance:trip.distance.toFixed(2),
-    time:trip.time,
-    average:trip.average.toFixed(1),
-    date:new Date().toLocaleString("ar-EG")
-  });
-
-  trips =
-    trips.slice(0,30);
-
-  localStorage.setItem(
-    "scooterTrips",
-    JSON.stringify(trips)
+  addLog(
+    "تم قطع اتصال Bluetooth."
   );
 
-  renderHistory();
+  setDisconnected();
+
+  showMessage(
+    "🔴 انقطع اتصال السكوتر."
+  );
 }
 
-function renderHistory(){
+/* =====================================
+   اكتشاف الخدمات
+===================================== */
 
-  const trips =
-    JSON.parse(
-      localStorage.getItem("scooterTrips") || "[]"
+async function scanServices(){
+
+  if(!server) return;
+
+  const container =
+    $("services");
+
+  container.innerHTML = "";
+
+  let services;
+
+  try{
+
+    services =
+      await server.getPrimaryServices();
+
+  }catch(error){
+
+    addLog(
+      "فشل الحصول على الخدمات: " +
+      error.message
     );
-
-  if(!trips.length){
-
-    $("history").textContent =
-      "لا توجد رحلات محفوظة.";
 
     return;
   }
 
-  $("history").innerHTML =
-    trips.map((trip,index)=>`
+  addLog(
+    "عدد الخدمات: " +
+    services.length
+  );
 
-      <div class="row">
+  for(const service of services){
 
-        <div>
-          <b>رحلة ${index+1}</b>
+    const serviceElement =
+      document.createElement("div");
 
-          <div class="sub">
-            ${escapeHtml(trip.date)}
-          </div>
-        </div>
+    serviceElement.className =
+      "service";
 
-        <div style="text-align:left">
+    serviceElement.innerHTML =
+      "<b>Service</b><br>" +
+      service.uuid;
 
-          <b>${trip.distance} كم</b>
+    container.appendChild(
+      serviceElement
+    );
 
-          <div class="sub">
-            ${formatTime(trip.time)}
-            • ${trip.average} كم/س
-          </div>
+    let characteristics = [];
 
-        </div>
+    try{
 
-      </div>
+      characteristics =
+        await service.getCharacteristics();
 
-    `).join("");
+    }catch(error){
+
+      addLog(
+        "فشل خصائص " +
+        service.uuid
+      );
+
+      continue;
+    }
+
+    for(
+      const characteristic
+      of characteristics
+    ){
+
+      const props =
+        characteristic.properties;
+
+      const properties = [];
+
+      if(props.read)
+        properties.push("READ");
+
+      if(props.write)
+        properties.push("WRITE");
+
+      if(props.writeWithoutResponse)
+        properties.push(
+          "WRITE WITHOUT RESPONSE"
+        );
+
+      if(props.notify)
+        properties.push("NOTIFY");
+
+      if(props.indicate)
+        properties.push("INDICATE");
+
+      const charElement =
+        document.createElement("div");
+
+      charElement.className =
+        "char";
+
+      charElement.innerHTML =
+
+        "<b>Characteristic</b><br>" +
+
+        characteristic.uuid +
+
+        "<br><span class='small'>" +
+
+        properties.join(" • ") +
+
+        "</span>";
+
+      serviceElement.appendChild(
+        charElement
+      );
+
+      addLog(
+        "CHAR: " +
+        characteristic.uuid +
+        " [" +
+        properties.join(", ") +
+        "]"
+      );
+
+      /* ===============================
+         READ
+      =============================== */
+
+      if(props.read){
+
+        try{
+
+          const value =
+            await characteristic.readValue();
+
+          handleData(
+            characteristic,
+            value,
+            "READ"
+          );
+
+        }catch(error){
+
+          addLog(
+            "READ failed " +
+            characteristic.uuid
+          );
+
+        }
+
+      }
+
+      /* ===============================
+         NOTIFY
+      =============================== */
+
+      if(props.notify){
+
+        try{
+
+          await characteristic
+            .startNotifications();
+
+          characteristic.addEventListener(
+            "characteristicvaluechanged",
+            event => {
+
+              handleData(
+                characteristic,
+                event.target.value,
+                "NOTIFY"
+              );
+
+            }
+          );
+
+          addLog(
+            "Notifications enabled: " +
+            characteristic.uuid
+          );
+
+        }catch(error){
+
+          addLog(
+            "NOTIFY failed " +
+            characteristic.uuid
+          );
+
+        }
+
+      }
+
+    }
+
+  }
+
 }
 
-/* =========================
-   حالة البطارية
-========================= */
+/* =====================================
+   استقبال بيانات فعلية
+===================================== */
 
-/*
-  البطارية ستظل "--%" إلى أن نجد
-  Battery Characteristic أو البروتوكول
-  الخاص بالسكوتر.
+function handleData(
+  characteristic,
+  value,
+  type
+){
 
-  لو الجهاز يعلن خدمة البطارية القياسية
-  يمكن لاحقاً قراءتها من:
-  0000180F-0000-1000-8000-00805f9b34fb
-*/
+  const hex =
+    toHex(value);
 
-async function tryReadStandardBattery(){
+  const decimal =
+    toDecimal(value);
 
-  if(!gattServer) return;
+  addLog(
+    type +
+    " " +
+    characteristic.uuid +
+    " | HEX: " +
+    hex +
+    " | DEC: " +
+    decimal
+  );
+
+  /*
+    لا نحول البيانات إلى سرعة أو بطارية
+    هنا بشكل عشوائي.
+
+    السبب:
+    البروتوكول الخاص بالسكوتر غير معروف.
+    البيانات المعروضة هي البيانات الحقيقية
+    التي أرسلها الجهاز.
+  */
+
+}
+
+/* =====================================
+   Battery Service القياسي
+===================================== */
+
+async function readStandardBattery(){
+
+  if(!server) return;
 
   try{
 
     const service =
-      await gattServer.getPrimaryService(
+      await server.getPrimaryService(
         "battery_service"
       );
 
@@ -820,55 +794,86 @@ async function tryReadStandardBattery(){
     $("battery").textContent =
       battery + "%";
 
-    log(
-      "Battery Service: " +
-      battery + "%"
+    addLog(
+      "STANDARD BATTERY: " +
+      battery +
+      "%"
+    );
+
+    if(
+      characteristic.properties.notify
+    ){
+
+      await characteristic
+        .startNotifications();
+
+      characteristic.addEventListener(
+        "characteristicvaluechanged",
+        event => {
+
+          const battery =
+            event.target.value.getUint8(0);
+
+          $("battery").textContent =
+            battery + "%";
+
+          addLog(
+            "BATTERY UPDATE: " +
+            battery +
+            "%"
+          );
+
+        }
+      );
+
+    }
+
+  }catch(error){
+
+    addLog(
+      "السكوتر لا يوفر Battery Service القياسية."
+    );
+
+  }
+
+}
+
+/* =====================================
+   فحص Bluetooth عند بدء الصفحة
+===================================== */
+
+(async function(){
+
+  if(!navigator.bluetooth){
+
+    addLog(
+      "Web Bluetooth غير مدعوم."
+    );
+
+    return;
+  }
+
+  try{
+
+    const available =
+      await navigator.bluetooth
+        .getAvailability();
+
+    addLog(
+      "Bluetooth available: " +
+      available
     );
 
   }catch(error){
 
-    log(
-      "خدمة البطارية القياسية غير متاحة."
+    addLog(
+      "تعذر فحص Bluetooth."
     );
-  }
-}
 
-/* =========================
-   تشغيل أولي
-========================= */
-
-renderHistory();
-
-(async()=>{
-
-  if("bluetooth" in navigator){
-
-    try{
-
-      const available =
-        await navigator.bluetooth.getAvailability();
-
-      log(
-        "Bluetooth availability: " +
-        available
-      );
-
-    }catch(error){
-
-      log(
-        "تعذر فحص Bluetooth: " +
-        error.message
-      );
-    }
-
-  }else{
-
-    log(
-      "المتصفح لا يدعم Web Bluetooth."
-    );
   }
 
 })();
+
 </script>
 
 </body>
