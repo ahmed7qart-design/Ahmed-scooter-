@@ -5,7 +5,19 @@
   "display": "standalone",
   "background_color": "#080808",
   "theme_color": "#e60000",
-  "description": "تطبيق متابعة رحلات السكوتر",
+  "description": "تطبيق AHMED SCOOTER",
   "lang": "ar",
-  "dir": "rtl"
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
