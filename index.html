@@ -6,16 +6,14 @@
   <title>AHMED SCOOTER</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, sans-serif;
       background: #080808;
       color: white;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -23,29 +21,25 @@
 
     .app {
       width: 90%;
-      max-width: 420px;
+      max-width: 430px;
       text-align: center;
     }
 
-    h1 {
-      margin-bottom: 10px;
-    }
+    h1 { margin-bottom: 10px; }
 
-    .status {
-      margin: 15px 0 30px;
-      color: #ff3333;
+    #status {
+      margin: 15px 0;
       font-size: 18px;
     }
 
     button {
       width: 100%;
-      padding: 18px;
-      margin: 10px 0;
+      padding: 17px;
+      margin: 8px 0;
       border: 0;
-      border-radius: 15px;
-      font-size: 20px;
+      border-radius: 14px;
+      font-size: 19px;
       font-weight: bold;
-      cursor: pointer;
     }
 
     #connect {
@@ -53,98 +47,147 @@
       color: white;
     }
 
-    #unlock {
-      background: #18a558;
-      color: white;
-    }
-
-    #lock {
-      background: #e53935;
-      color: white;
-    }
-
     button:disabled {
-      background: #333 !important;
-      color: #777 !important;
-      cursor: not-allowed;
-      opacity: 0.7;
+      background: #333;
+      color: #777;
+    }
+
+    #services {
+      margin-top: 20px;
+      padding: 15px;
+      background: #151515;
+      border-radius: 14px;
+      text-align: left;
+      direction: ltr;
+      max-height: 250px;
+      overflow-y: auto;
+      font-size: 13px;
+      word-break: break-all;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
-    <h1>🛴 AHMED SCOOTER</h1>
+<div class="app">
 
-    <div class="status" id="status">
-      🔴 غير متصل
-    </div>
+  <h1>🛴 AHMED SCOOTER</h1>
 
-    <button id="connect">🔵 اتصال Bluetooth</button>
+  <div id="status">🔴 غير متصل</div>
 
-    <button id="unlock" disabled>
-      🔓 فتح السكوتر
-    </button>
+  <button id="connect">
+    🔵 اكتشاف السكوتر
+  </button>
 
-    <button id="lock" disabled>
-      🔒 قفل السكوتر
-    </button>
+  <button id="unlock" disabled>
+    🔓 فتح السكوتر
+  </button>
+
+  <button id="lock" disabled>
+    🔒 قفل السكوتر
+  </button>
+
+  <div id="services">
+    لم يتم اكتشاف خدمات Bluetooth بعد.
   </div>
 
-  <script>
-    let bluetoothDevice = null;
+</div>
 
-    const connectButton = document.getElementById("connect");
-    const unlockButton = document.getElementById("unlock");
-    const lockButton = document.getElementById("lock");
-    const statusText = document.getElementById("status");
+<script>
+let device = null;
+let server = null;
 
-    connectButton.addEventListener("click", async () => {
-      if (!navigator.bluetooth) {
-        alert("المتصفح أو الجهاز لا يدعم Web Bluetooth.");
-        return;
-      }
+const connectBtn = document.getElementById("connect");
+const unlockBtn = document.getElementById("unlock");
+const lockBtn = document.getElementById("lock");
+const statusBox = document.getElementById("status");
+const servicesBox = document.getElementById("services");
 
-      try {
-        statusText.textContent = "🟡 جاري البحث عن جهاز...";
+connectBtn.addEventListener("click", async () => {
 
-        bluetoothDevice = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true
-        });
+  if (!navigator.bluetooth) {
+    statusBox.textContent =
+      "❌ المتصفح لا يدعم Web Bluetooth";
+    return;
+  }
 
-        const server = await bluetoothDevice.gatt.connect();
+  try {
 
-        if (server.connected) {
-          statusText.textContent = "🟢 متصل بالسكوتر";
-          unlockButton.disabled = false;
-          lockButton.disabled = false;
-          connectButton.textContent = "🟢 متصل";
-          connectButton.disabled = true;
-        }
+    statusBox.textContent = "🟡 اختر جهاز Bluetooth...";
 
-        bluetoothDevice.addEventListener("gattserverdisconnected", () => {
-          statusText.textContent = "🔴 تم قطع الاتصال";
-          unlockButton.disabled = true;
-          lockButton.disabled = true;
-          connectButton.disabled = false;
-          connectButton.textContent = "🔵 اتصال Bluetooth";
-        });
-
-      } catch (error) {
-        statusText.textContent = "🔴 غير متصل";
-        console.log(error);
-      }
+    device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: [
+        "battery_service",
+        "device_information"
+      ]
     });
 
-    unlockButton.addEventListener("click", () => {
-      alert("اتصل السكوتر، لكن أمر الفتح يحتاج بروتوكول السكوتر الحقيقي.");
+    statusBox.textContent =
+      "🟡 تم اختيار: " + (device.name || "جهاز غير معروف");
+
+    device.addEventListener(
+      "gattserverdisconnected",
+      disconnected
+    );
+
+    server = await device.gatt.connect();
+
+    statusBox.textContent =
+      "🟢 متصل: " + (device.name || "جهاز غير معروف");
+
+    servicesBox.textContent =
+      "🔍 جاري قراءة خدمات Bluetooth...";
+
+    const services =
+      await server.getPrimaryServices();
+
+    servicesBox.innerHTML = "";
+
+    if (services.length === 0) {
+      servicesBox.textContent =
+        "⚠️ لم يتم العثور على خدمات GATT.";
+      return;
+    }
+
+    services.forEach(service => {
+
+      const line = document.createElement("div");
+
+      line.textContent =
+        "Service: " + service.uuid;
+
+      servicesBox.appendChild(line);
     });
 
-    lockButton.addEventListener("click", () => {
-      alert("اتصل السكوتر، لكن أمر القفل يحتاج بروتوكول السكوتر الحقيقي.");
-    });
-  </script>
+    servicesBox.innerHTML +=
+      "<br>⚠️ لم يتم تحديد بروتوكول السكوتر تلقائيًا.";
+
+  } catch (error) {
+
+    console.error(error);
+
+    statusBox.textContent =
+      "🔴 لم يتم الاتصال";
+
+    servicesBox.textContent =
+      "السبب: " + error.message;
+  }
+});
+
+function disconnected() {
+
+  statusBox.textContent =
+    "🔴 تم قطع الاتصال";
+
+  servicesBox.textContent =
+    "تم فصل جهاز Bluetooth.";
+
+  unlockBtn.disabled = true;
+  lockBtn.disabled = true;
+  connectBtn.disabled = false;
+}
+</script>
 
 </body>
 </html>
