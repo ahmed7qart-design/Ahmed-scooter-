@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
 <title>AHMED SCOOTER</title>
 
 <link
@@ -11,6 +18,7 @@
 />
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -64,17 +72,18 @@ button {
   font-size: 20px;
   font-weight: bold;
   margin-top: 10px;
+  cursor: pointer;
 }
 
 button:active {
   transform: scale(.98);
 }
 
-#permissionBtn {
-  background: #f59e0b;
+#locationBtn {
+  background: #1877f2;
 }
 
-#permissionBtn.ok {
+#locationBtn.ok {
   background: #16a34a;
 }
 
@@ -89,7 +98,6 @@ button:active {
   border: 1px solid #2a2a2a;
   border-radius: 18px;
   padding: 12px;
-  margin-top: 14px;
   margin-bottom: 14px;
 }
 
@@ -106,22 +114,8 @@ button:active {
   overflow: hidden;
 }
 
-/* سهم موقعك */
-.user-arrow {
-  background: transparent;
-  border: none;
-}
-
-.arrow {
-  color: #1877f2;
-  font-size: 34px;
-  font-weight: bold;
-  text-shadow:
-    0 0 4px white,
-    0 0 8px #1877f2;
-  transition: transform .2s linear;
-}
 </style>
+
 </head>
 
 <body>
@@ -130,214 +124,34 @@ button:active {
 
 <h1>🛴 AHMED SCOOTER</h1>
 
-<div class="card">
-  <div class="title">السرعة الحالية</div>
-  <div class="value" id="speed">0.0 km/h</div>
-</div>
 
 <div class="card">
-  <div class="title">المسافة</div>
-  <div class="value" id="distance">0.00 km</div>
+
+<div class="title">
+السرعة الحالية
 </div>
+
+<div
+  class="value"
+  id="speed"
+>
+0.0 km/h
+</div>
+
+</div>
+
 
 <div class="card">
-  <div class="title">وقت الرحلة</div>
-  <div class="value" id="time">00:00</div>
+
+<div class="title">
+المسافة
 </div>
 
-<div class="card">
-  <div class="title">السعرات التقديرية</div>
-  <div class="value" id="calories">0 kcal</div>
-</div>
-
-<button id="permissionBtn">
-  📍 السماح بتشغيل الموقع
-</button>
-
-<div class="map-card">
-
-  <div class="map-title">
-    🗺️ الخريطة
-  </div>
-
-  <div id="map"></div>
-
-</div>
-
-<button id="startBtn" onclick="toggleRide()">
-  ▶️ ابدأ الرحلة
-</button>
-
-<div class="status" id="status">
-  الرحلة متوقفة
+<div
+  class="value"
+  id="distance"
+>
+0.00 km
 </div>
 
 </div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-
-let running = false;
-let watchId = null;
-
-let lastPosition = null;
-let totalDistance = 0;
-
-let startTime = 0;
-let timer = null;
-
-let locationAllowed = false;
-let userMarker = null;
-
-
-// =================================
-// الخريطة
-// =================================
-
-const map = L.map("map").setView(
-  [31.2001, 29.9187],
-  13
-);
-
-L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom: 19,
-    attribution:
-      "&copy; OpenStreetMap contributors"
-  }
-).addTo(map);
-
-
-// =================================
-// السماح بالموقع
-// =================================
-
-document.getElementById(
-  "permissionBtn"
-).addEventListener(
-  "click",
-  function() {
-
-    if (!navigator.geolocation) {
-
-      document.getElementById(
-        "status"
-      ).innerHTML =
-        "❌ المتصفح لا يدعم GPS";
-
-      return;
-    }
-
-    document.getElementById(
-      "status"
-    ).innerHTML =
-      "🟡 جاري طلب السماح بالموقع...";
-
-
-    navigator.geolocation.getCurrentPosition(
-
-      function(position) {
-
-        locationAllowed = true;
-
-        const btn =
-          document.getElementById(
-            "permissionBtn"
-          );
-
-        btn.innerHTML =
-          "✅ تم السماح بالموقع";
-
-        btn.classList.add("ok");
-
-        showLocation(position);
-
-        document.getElementById(
-          "status"
-        ).innerHTML =
-          "🟢 الموقع جاهز";
-
-      },
-
-      function() {
-
-        document.getElementById(
-          "status"
-        ).innerHTML =
-          "⚠️ لازم تسمح للموقع من الهاتف";
-
-      },
-
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
-      }
-
-    );
-
-  }
-);
-
-
-// =================================
-// بدء / إيقاف الرحلة
-// =================================
-
-function toggleRide() {
-
-  if (!running) {
-    startRide();
-  } else {
-    stopRide();
-  }
-
-}
-
-
-// =================================
-// بدء الرحلة
-// =================================
-
-function startRide() {
-
-  if (!locationAllowed) {
-
-    alert(
-      "اضغط أولًا على «السماح بتشغيل الموقع»"
-    );
-
-    return;
-  }
-
-  running = true;
-
-  totalDistance = 0;
-  lastPosition = null;
-
-  startTime = Date.now();
-
-  document.getElementById(
-    "speed"
-  ).innerHTML =
-    "0.0 km/h";
-
-  document.getElementById(
-    "distance"
-  ).innerHTML =
-    "0.00 km";
-
-  document.getElementById(
-    "time"
-  ).innerHTML =
-    "00:00";
-
-  document.getElementById(
-    "calories"
-  ).innerHTML =
-    "0 kcal";
-
-
- 
