@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>AHMED SCOOTER</title>
 
+  <!-- Leaflet -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -20,12 +29,15 @@
     }
 
     .app {
-      width: 90%;
+      width: 92%;
       max-width: 430px;
       text-align: center;
+      padding: 20px 0;
     }
 
-    h1 { margin-bottom: 10px; }
+    h1 {
+      margin: 0 0 10px;
+    }
 
     #status {
       margin: 15px 0;
@@ -34,12 +46,13 @@
 
     button {
       width: 100%;
-      padding: 17px;
+      padding: 16px;
       margin: 8px 0;
       border: 0;
       border-radius: 14px;
-      font-size: 19px;
+      font-size: 18px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     #connect {
@@ -47,22 +60,31 @@
       color: white;
     }
 
-    button:disabled {
-      background: #333;
-      color: #777;
+    #location {
+      background: #222;
+      color: white;
     }
 
     #services {
-      margin-top: 20px;
-      padding: 15px;
+      margin-top: 15px;
+      padding: 12px;
       background: #151515;
       border-radius: 14px;
       text-align: left;
       direction: ltr;
-      max-height: 250px;
+      max-height: 180px;
       overflow-y: auto;
-      font-size: 13px;
+      font-size: 12px;
       word-break: break-all;
+    }
+
+    #map {
+      width: 100%;
+      height: 260px;
+      margin-top: 15px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid #222;
     }
   </style>
 </head>
@@ -73,19 +95,19 @@
 
   <h1>🛴 AHMED SCOOTER</h1>
 
-  <div id="status">🔴 غير متصل</div>
+  <div id="status">
+    🔴 Bluetooth غير متصل
+  </div>
 
   <button id="connect">
-    🔵 اكتشاف السكوتر
+    🔵 اكتشاف Bluetooth
   </button>
 
-  <button id="unlock" disabled>
-    🔓 فتح السكوتر
+  <button id="location">
+    📍 تحديد موقعي
   </button>
 
-  <button id="lock" disabled>
-    🔒 قفل السكوتر
-  </button>
+  <div id="map"></div>
 
   <div id="services">
     لم يتم اكتشاف خدمات Bluetooth بعد.
@@ -93,75 +115,117 @@
 
 </div>
 
+
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
 <script>
+
 let device = null;
 let server = null;
 
-const connectBtn = document.getElementById("connect");
-const unlockBtn = document.getElementById("unlock");
-const lockBtn = document.getElementById("lock");
-const statusBox = document.getElementById("status");
-const servicesBox = document.getElementById("services");
+const statusBox =
+  document.getElementById("status");
+
+const servicesBox =
+  document.getElementById("services");
+
+const connectBtn =
+  document.getElementById("connect");
+
+const locationBtn =
+  document.getElementById("location");
+
+
+// ==========================
+// Bluetooth
+// ==========================
 
 connectBtn.addEventListener("click", async () => {
 
   if (!navigator.bluetooth) {
+
     statusBox.textContent =
-      "❌ المتصفح لا يدعم Web Bluetooth";
+      "❌ جهازك لا يدعم Web Bluetooth";
+
     return;
   }
 
   try {
 
-    statusBox.textContent = "🟡 اختر جهاز Bluetooth...";
+    statusBox.textContent =
+      "🟡 اختر جهاز Bluetooth...";
 
-    device = await navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [
-        "battery_service",
-        "device_information"
-      ]
-    });
+    device =
+      await navigator.bluetooth.requestDevice({
+
+        acceptAllDevices: true,
+
+        optionalServices: [
+          "battery_service",
+          "device_information"
+        ]
+
+      });
+
 
     statusBox.textContent =
-      "🟡 تم اختيار: " + (device.name || "جهاز غير معروف");
+      "🟡 جاري الاتصال بـ " +
+      (device.name || "جهاز غير معروف");
+
 
     device.addEventListener(
       "gattserverdisconnected",
       disconnected
     );
 
-    server = await device.gatt.connect();
+
+    server =
+      await device.gatt.connect();
+
 
     statusBox.textContent =
-      "🟢 متصل: " + (device.name || "جهاز غير معروف");
+      "🟢 متصل بـ " +
+      (device.name || "جهاز غير معروف");
+
 
     servicesBox.textContent =
       "🔍 جاري قراءة خدمات Bluetooth...";
 
+
     const services =
       await server.getPrimaryServices();
 
+
     servicesBox.innerHTML = "";
 
+
     if (services.length === 0) {
+
       servicesBox.textContent =
         "⚠️ لم يتم العثور على خدمات GATT.";
+
       return;
     }
 
+
     services.forEach(service => {
 
-      const line = document.createElement("div");
+      const line =
+        document.createElement("div");
 
       line.textContent =
         "Service: " + service.uuid;
 
       servicesBox.appendChild(line);
+
     });
 
+
     servicesBox.innerHTML +=
-      "<br>⚠️ لم يتم تحديد بروتوكول السكوتر تلقائيًا.";
+      "<br>⚠️ لم يتم إرسال أي أوامر تحكم للسكوتر.";
+
 
   } catch (error) {
 
@@ -171,23 +235,4 @@ connectBtn.addEventListener("click", async () => {
       "🔴 لم يتم الاتصال";
 
     servicesBox.textContent =
-      "السبب: " + error.message;
-  }
-});
-
-function disconnected() {
-
-  statusBox.textContent =
-    "🔴 تم قطع الاتصال";
-
-  servicesBox.textContent =
-    "تم فصل جهاز Bluetooth.";
-
-  unlockBtn.disabled = true;
-  lockBtn.disabled = true;
-  connectBtn.disabled = false;
-}
-</script>
-
-</body>
-</html>
+      "السبب: "
