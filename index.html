@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Scooter GPS</title>
 
@@ -18,8 +21,8 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 body{
     margin:0;
-    background:white;
-    color:#111;
+    background:#ffffff;
+    color:#111111;
     font-family:Arial,sans-serif;
 }
 
@@ -36,9 +39,12 @@ h1{
     margin:5px 0 20px;
 }
 
+
+/* العدادات */
+
 .box{
     background:#f5f5f5;
-    border:1px solid #ddd;
+    border:1px solid #dddddd;
     border-radius:18px;
     padding:18px;
     margin-bottom:10px;
@@ -47,7 +53,7 @@ h1{
 
 .label{
     display:block;
-    color:#666;
+    color:#666666;
     font-size:16px;
     margin-bottom:7px;
 }
@@ -60,25 +66,29 @@ h1{
 
 .unit{
     display:block;
-    color:#777;
+    color:#777777;
     font-size:14px;
     margin-top:3px;
 }
+
+
+/* الأزرار */
 
 .buttons{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
-    margin:18px 0 10px;
+    margin-top:18px;
 }
 
 button{
-    height:58px;
     border:0;
     border-radius:17px;
+    height:60px;
     color:white;
     font-size:18px;
     font-weight:bold;
+    cursor:pointer;
 }
 
 #start{
@@ -90,15 +100,25 @@ button{
 }
 
 #bluetooth{
-    grid-column:1 / -1;
-    background:#2878f0;
+    width:100%;
+    margin-top:10px;
+    background:#1976d2;
 }
 
 #status{
     text-align:center;
-    color:#666;
-    margin:12px 0 18px;
+    color:#666666;
+    margin:13px 0 18px;
 }
+
+#bluetoothStatus{
+    text-align:center;
+    color:#666666;
+    margin:10px 0 18px;
+}
+
+
+/* الخريطة */
 
 .map-title{
     text-align:center;
@@ -111,9 +131,12 @@ button{
     width:100%;
     height:360px;
     border-radius:20px;
-    border:1px solid #ddd;
+    border:1px solid #dddddd;
     overflow:hidden;
 }
+
+
+/* سهم السكوتر */
 
 .scooter-arrow{
     background:transparent !important;
@@ -123,17 +146,25 @@ button{
 .arrow-marker{
     width:50px;
     height:50px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     font-size:48px;
     font-weight:bold;
+
     color:#0878ff;
+
     text-shadow:
         0 2px 3px white,
         0 0 5px white;
+
     transform-origin:center center;
 }
+
+
+/* معلومات GPS */
 
 .info{
     margin-top:15px;
@@ -146,7 +177,7 @@ button{
     display:flex;
     justify-content:space-between;
     padding:11px 0;
-    border-bottom:1px solid #ddd;
+    border-bottom:1px solid #dddddd;
 }
 
 .row:last-child{
@@ -154,7 +185,9 @@ button{
 }
 
 </style>
+
 </head>
+
 
 <body>
 
@@ -162,54 +195,147 @@ button{
 
 <h1>🛴 Scooter GPS</h1>
 
-<div class="box">
-<span class="label">السرعة الحالية</span>
-<span class="value" id="currentSpeed">0.0</span>
-<span class="unit">كم / ساعة</span>
-</div>
+
+<!-- السرعة الحالية -->
 
 <div class="box">
-<span class="label">أعلى سرعة</span>
-<span class="value" id="maxSpeed">0.0</span>
-<span class="unit">كم / ساعة</span>
+
+<span class="label">
+السرعة الحالية
+</span>
+
+<span
+class="value"
+id="currentSpeed">
+0.0
+</span>
+
+<span class="unit">
+كم / ساعة
+</span>
+
 </div>
 
-<div class="box">
-<span class="label">متوسط السرعة</span>
-<span class="value" id="averageSpeed">0.0</span>
-<span class="unit">كم / ساعة</span>
-</div>
+
+<!-- أعلى سرعة -->
 
 <div class="box">
-<span class="label">المسافة المقطوعة</span>
-<span class="value" id="distance">0.00</span>
-<span class="unit">كيلومتر</span>
+
+<span class="label">
+أعلى سرعة
+</span>
+
+<span
+class="value"
+id="maxSpeed">
+0.0
+</span>
+
+<span class="unit">
+كم / ساعة
+</span>
+
 </div>
 
+
+<!-- متوسط السرعة -->
+
 <div class="box">
-<span class="label">مدة الرحلة</span>
-<span class="value" id="time">00:00:00</span>
+
+<span class="label">
+متوسط السرعة
+</span>
+
+<span
+class="value"
+id="averageSpeed">
+0.0
+</span>
+
+<span class="unit">
+كم / ساعة
+</span>
+
 </div>
+
+
+<!-- المسافة -->
+
+<div class="box">
+
+<span class="label">
+المسافة المقطوعة
+</span>
+
+<span
+class="value"
+id="distance">
+0.00
+</span>
+
+<span class="unit">
+كيلومتر
+</span>
+
+</div>
+
+
+<!-- الوقت -->
+
+<div class="box">
+
+<span class="label">
+مدة الرحلة
+</span>
+
+<span
+class="value"
+id="time">
+00:00:00
+</span>
+
+</div>
+
+
+<!-- تشغيل وغلق -->
 
 <div class="buttons">
 
-<button id="start">
+<button
+id="start"
+type="button">
 ▶ تشغيل
 </button>
 
-<button id="stop">
+<button
+id="stop"
+type="button">
 ■ غلق
 </button>
 
-<button id="bluetooth">
+</div>
+
+
+<!-- Bluetooth -->
+
+<button
+id="bluetooth"
+type="button">
 🔵 اتصال Bluetooth
 </button>
 
+
+<div id="bluetoothStatus">
+🔵 Bluetooth: غير متصل
 </div>
+
 
 <div id="status">
 🔴 الرحلة متوقفة
 </div>
+
+
+<!-- الخريطة -->
 
 <div class="map-title">
 🗺️ موقع السكوتر
@@ -217,45 +343,71 @@ button{
 
 <div id="map"></div>
 
+
+<!-- معلومات GPS -->
+
 <div class="info">
 
 <div class="row">
-<span>📍 خط العرض</span>
-<strong id="latitude">--</strong>
+
+<span>
+📍 خط العرض
+</span>
+
+<strong id="latitude">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>📍 خط الطول</span>
-<strong id="longitude">--</strong>
+
+<span>
+📍 خط الطول
+</span>
+
+<strong id="longitude">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>🧭 الاتجاه</span>
-<strong id="direction">--</strong>
-</div>
 
-<div class="row">
-<span>🔵 Bluetooth</span>
-<strong id="bluetoothStatus">غير متصل</strong>
-</div>
+<span>
+🧭 الاتجاه
+</span>
 
-</div>
+<strong id="direction">
+--
+</strong>
 
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</div>
+
+</div>
+
+
+<script
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
 
 <script>
 
-/* =========================
+/* ==========================
    الخريطة
-========================= */
+========================== */
 
 const map =
 L.map("map").setView(
     [31.2001,29.9187],
     15
 );
+
 
 L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -266,9 +418,9 @@ L.tileLayer(
 ).addTo(map);
 
 
-/* =========================
+/* ==========================
    سهم السكوتر
-========================= */
+========================== */
 
 const arrowIcon =
 L.divIcon({
@@ -284,10 +436,11 @@ L.divIcon({
 
 });
 
+
 let scooterMarker = null;
 
 
-/* خط الطريق */
+/* خط الرحلة */
 
 let routePoints = [];
 
@@ -302,9 +455,9 @@ L.polyline(
 ).addTo(map);
 
 
-/* =========================
+/* ==========================
    المتغيرات
-========================= */
+========================== */
 
 let running = false;
 
@@ -329,54 +482,73 @@ let speedCount = 0;
 
 let bluetoothDevice = null;
 
-let bluetoothServer = null;
 
-
-/* =========================
-   عناصر الصفحة
-========================= */
+/* ==========================
+   العناصر
+========================== */
 
 const currentSpeed =
-document.getElementById("currentSpeed");
+document.getElementById(
+    "currentSpeed"
+);
 
 const maxSpeed =
-document.getElementById("maxSpeed");
+document.getElementById(
+    "maxSpeed"
+);
 
 const averageSpeed =
-document.getElementById("averageSpeed");
+document.getElementById(
+    "averageSpeed"
+);
 
 const distance =
-document.getElementById("distance");
+document.getElementById(
+    "distance"
+);
 
 const time =
-document.getElementById("time");
+document.getElementById(
+    "time"
+);
 
 const status =
-document.getElementById("status");
+document.getElementById(
+    "status"
+);
 
 const latitude =
-document.getElementById("latitude");
+document.getElementById(
+    "latitude"
+);
 
 const longitude =
-document.getElementById("longitude");
+document.getElementById(
+    "longitude"
+);
 
 const direction =
-document.getElementById("direction");
+document.getElementById(
+    "direction"
+);
 
 const bluetoothStatus =
-document.getElementById("bluetoothStatus");
+document.getElementById(
+    "bluetoothStatus"
+);
 
 
-/* =========================
+/* ==========================
    تشغيل الرحلة
-========================= */
+========================== */
 
-document.getElementById("start").onclick =
-function(){
+document.getElementById("start")
+.onclick = function(){
 
     if(running){
         return;
     }
+
 
     if(!navigator.geolocation){
 
@@ -386,39 +558,61 @@ function(){
         return;
     }
 
+
     running = true;
 
-    startTime = Date.now();
+    startTime =
+    Date.now();
 
-    lastPosition = null;
+    lastPosition =
+    null;
 
-    totalDistance = 0;
+    totalDistance =
+    0;
 
-    maximumSpeed = 0;
+    maximumSpeed =
+    0;
 
-    speedTotal = 0;
+    speedTotal =
+    0;
 
-    speedCount = 0;
+    speedCount =
+    0;
 
-    routePoints = [];
+    routePoints =
+    [];
 
-    routeLine.setLatLngs([]);
+    routeLine.setLatLngs(
+        []
+    );
 
-    currentSpeed.textContent = "0.0";
 
-    maxSpeed.textContent = "0.0";
+    currentSpeed.textContent =
+    "0.0";
 
-    averageSpeed.textContent = "0.0";
+    maxSpeed.textContent =
+    "0.0";
 
-    distance.textContent = "0.00";
+    averageSpeed.textContent =
+    "0.0";
 
-    time.textContent = "00:00:00";
+    distance.textContent =
+    "0.00";
+
+    time.textContent =
+    "00:00:00";
+
 
     status.textContent =
     "🟢 الرحلة تعمل";
 
+
     timerID =
-    setInterval(updateTime,1000);
+    setInterval(
+        updateTime,
+        1000
+    );
+
 
     watchID =
     navigator.geolocation.watchPosition(
@@ -438,9 +632,9 @@ function(){
 };
 
 
-/* =========================
+/* ==========================
    GPS
-========================= */
+========================== */
 
 function updateGPS(position){
 
@@ -448,14 +642,19 @@ function updateGPS(position){
         return;
     }
 
+
     const lat =
     position.coords.latitude;
 
     const lon =
     position.coords.longitude;
 
+
+    /* السرعة */
+
     let speed =
     position.coords.speed;
+
 
     if(
         speed === null ||
@@ -468,62 +667,94 @@ function updateGPS(position){
 
     }
 
-    speed = speed * 3.6;
+
+    /* متر/ثانية إلى كم/ساعة */
+
+    speed =
+    speed * 3.6;
+
 
     currentSpeed.textContent =
     speed.toFixed(1);
 
-    if(speed > maximumSpeed){
 
-        maximumSpeed = speed;
+    /* أعلى سرعة */
+
+    if(
+        speed >
+        maximumSpeed
+    ){
+
+        maximumSpeed =
+        speed;
 
     }
+
 
     maxSpeed.textContent =
     maximumSpeed.toFixed(1);
 
-    speedTotal += speed;
+
+    /* متوسط السرعة */
+
+    speedTotal +=
+    speed;
 
     speedCount++;
 
+
     averageSpeed.textContent =
+
     (
-        speedTotal / speedCount
+        speedTotal /
+        speedCount
     ).toFixed(1);
 
 
     /* المسافة */
 
-    if(lastPosition !== null){
+    if(
+        lastPosition !== null
+    ){
 
         const d =
         calculateDistance(
 
             lastPosition.lat,
             lastPosition.lon,
+
             lat,
             lon
 
         );
 
-        if(d >= 0 && d < 0.2){
 
-            totalDistance += d;
+        if(
+            d >= 0 &&
+            d < 0.2
+        ){
+
+            totalDistance +=
+            d;
 
         }
 
     }
 
+
     lastPosition = {
+
         lat:lat,
         lon:lon
+
     };
+
 
     distance.textContent =
     totalDistance.toFixed(2);
 
 
-    /* الموقع */
+    /* GPS */
 
     latitude.textContent =
     lat.toFixed(6);
@@ -537,6 +768,7 @@ function updateGPS(position){
     const heading =
     position.coords.heading;
 
+
     if(
         heading !== null &&
         Number.isFinite(heading) &&
@@ -544,16 +776,22 @@ function updateGPS(position){
     ){
 
         direction.textContent =
-        getDirection(heading);
+        getDirection(
+            heading
+        );
 
-        rotateArrow(heading);
+        rotateArrow(
+            heading
+        );
 
     }
 
 
     /* السهم */
 
-    if(scooterMarker === null){
+    if(
+        scooterMarker === null
+    ){
 
         scooterMarker =
         L.marker(
@@ -563,7 +801,9 @@ function updateGPS(position){
             }
         ).addTo(map);
 
-    }else{
+    }
+
+    else{
 
         scooterMarker.setLatLng(
             [lat,lon]
@@ -577,6 +817,7 @@ function updateGPS(position){
     routePoints.push(
         [lat,lon]
     );
+
 
     routeLine.setLatLngs(
         routePoints
@@ -596,20 +837,24 @@ function updateGPS(position){
 }
 
 
-/* =========================
+/* ==========================
    تدوير السهم
-========================= */
+========================== */
 
-function rotateArrow(degrees){
+function rotateArrow(
+    degrees
+){
 
     const arrow =
     document.querySelector(
         ".arrow-marker"
     );
 
+
     if(!arrow){
         return;
     }
+
 
     arrow.style.transform =
     "rotate(" +
@@ -619,11 +864,13 @@ function rotateArrow(degrees){
 }
 
 
-/* =========================
+/* ==========================
    الاتجاه
-========================= */
+========================== */
 
-function getDirection(degrees){
+function getDirection(
+    degrees
+){
 
     const directions = [
 
@@ -638,34 +885,45 @@ function getDirection(degrees){
 
     ];
 
+
     const index =
-    Math.round(degrees / 45) % 8;
+    Math.round(
+        degrees / 45
+    ) % 8;
+
 
     return directions[index];
 
 }
 
 
-/* =========================
+/* ==========================
    حساب المسافة
-========================= */
+========================== */
 
 function calculateDistance(
+
     lat1,
     lon1,
+
     lat2,
     lon2
+
 ){
 
-    const R = 6371;
+    const R =
+    6371;
+
 
     const dLat =
     (lat2-lat1) *
     Math.PI / 180;
 
+
     const dLon =
     (lon2-lon1) *
     Math.PI / 180;
+
 
     const a =
 
@@ -691,6 +949,7 @@ function calculateDistance(
     Math.sin(dLon/2) *
     Math.sin(dLon/2);
 
+
     const c =
     2 *
     Math.atan2(
@@ -698,14 +957,15 @@ function calculateDistance(
         Math.sqrt(1-a)
     );
 
+
     return R * c;
 
 }
 
 
-/* =========================
+/* ==========================
    الوقت
-========================= */
+========================== */
 
 function updateTime(){
 
@@ -713,54 +973,73 @@ function updateTime(){
         return;
     }
 
+
     const seconds =
     Math.floor(
+
         (
             Date.now() -
             startTime
         ) / 1000
+
     );
+
 
     const hours =
     Math.floor(
         seconds / 3600
     );
 
+
     const minutes =
     Math.floor(
-        (seconds % 3600) / 60
+
+        (seconds % 3600) /
+        60
+
     );
+
 
     const secs =
     seconds % 60;
 
+
     time.textContent =
 
-    String(hours).padStart(2,"0")
-    + ":"
-    +
-    String(minutes).padStart(2,"0")
-    + ":"
-    +
-    String(secs).padStart(2,"0");
+    String(hours)
+    .padStart(2,"0")
+
+    + ":" +
+
+    String(minutes)
+    .padStart(2,"0")
+
+    + ":" +
+
+    String(secs)
+    .padStart(2,"0");
 
 }
 
 
-/* =========================
-   إيقاف
-========================= */
+/* ==========================
+   غلق الرحلة
+========================== */
 
-document.getElementById("stop").onclick =
-function(){
+document.getElementById("stop")
+.onclick = function(){
 
     if(!running){
         return;
     }
 
+
     running = false;
 
-    if(watchID !== null){
+
+    if(
+        watchID !== null
+    ){
 
         navigator.geolocation.clearWatch(
             watchID
@@ -770,16 +1049,23 @@ function(){
 
     }
 
-    if(timerID !== null){
 
-        clearInterval(timerID);
+    if(
+        timerID !== null
+    ){
+
+        clearInterval(
+            timerID
+        );
 
         timerID = null;
 
     }
 
+
     currentSpeed.textContent =
     "0.0";
+
 
     status.textContent =
     "🔴 الرحلة متوقفة";
@@ -787,20 +1073,26 @@ function(){
 };
 
 
-/* =========================
+/* ==========================
    Bluetooth
-========================= */
+========================== */
 
-document.getElementById("bluetooth").onclick =
-async function(){
+document.getElementById("bluetooth")
+.onclick = async function(){
 
-    if(!navigator.bluetooth){
+    /*
+    التأكد من دعم Web Bluetooth
+    */
+
+    if(
+        !navigator.bluetooth
+    ){
 
         bluetoothStatus.textContent =
-        "غير مدعوم";
+        "❌ غير مدعوم";
 
         status.textContent =
-        "⚠️ Bluetooth غير مدعوم في هذا المتصفح";
+        "⚠️ المتصفح لا يدعم Bluetooth";
 
         return;
     }
@@ -808,9 +1100,17 @@ async function(){
 
     try{
 
-        status.textContent =
-        "🔵 جاري البحث عن جهاز Bluetooth...";
+        bluetoothStatus.textContent =
+        "🔵 جاري البحث...";
 
+
+        status.textContent =
+        "🔵 اختر جهاز السكوتر";
+
+
+        /*
+        فتح قائمة أجهزة Bluetooth
+        */
 
         bluetoothDevice =
         await navigator.bluetooth.requestDevice({
@@ -820,89 +1120,113 @@ async function(){
         });
 
 
+        if(
+            !bluetoothDevice
+        ){
+
+            throw new Error(
+                "No device"
+            );
+
+        }
+
+
         bluetoothStatus.textContent =
-        "تم اختيار الجهاز";
-
-
-        status.textContent =
-        "🔵 تم اختيار: " +
-        (bluetoothDevice.name || "جهاز Bluetooth");
-
-
-        bluetoothDevice.addEventListener(
-            "gattserverdisconnected",
-            bluetoothDisconnected
-        );
+        "🟡 تم اختيار الجهاز";
 
 
         /*
-        محاولة الاتصال بـ GATT.
+        محاولة الاتصال
         */
 
-        if(bluetoothDevice.gatt){
+        if(
+            bluetoothDevice.gatt
+        ){
 
-            bluetoothServer =
             await bluetoothDevice.gatt.connect();
 
+
             bluetoothStatus.textContent =
-            "متصل";
+            "🟢 متصل";
 
             status.textContent =
             "🟢 Bluetooth متصل";
 
         }
 
+        else{
+
+            bluetoothStatus.textContent =
+            "🟡 تم الاختيار";
+
+        }
+
+
+        /*
+        عند فصل الجهاز
+        */
+
+        bluetoothDevice.addEventListener(
+            "gattserverdisconnected",
+            function(){
+
+                bluetoothStatus.textContent =
+                "🔴 غير متصل";
+
+                status.textContent =
+                "🔴 Bluetooth انفصل";
+
+            }
+        );
+
     }
 
     catch(error){
 
-        console.log(error);
+        console.log(
+            error
+        );
+
 
         bluetoothStatus.textContent =
-        "غير متصل";
+        "🔴 غير متصل";
+
 
         status.textContent =
-        "⚠️ لم يتم الاتصال بـ Bluetooth";
+        "لم يتم الاتصال";
 
     }
 
 };
 
 
-/* Bluetooth فصل */
-
-function bluetoothDisconnected(){
-
-    bluetoothStatus.textContent =
-    "غير متصل";
-
-    status.textContent =
-    "🔴 Bluetooth غير متصل";
-
-}
-
-
-/* =========================
+/* ==========================
    خطأ GPS
-========================= */
+========================== */
 
 function gpsError(error){
 
-    if(error.code === 1){
+    if(
+        error.code === 1
+    ){
 
         status.textContent =
-        "⚠️ اسمح للتطبيق باستخدام الموقع";
+        "⚠️ اسمح للتطبيق بالموقع";
 
     }
 
-    else if(error.code === 2){
+    else if(
+        error.code === 2
+    ){
 
         status.textContent =
-        "⚠️ تعذر تحديد موقعك";
+        "⚠️ تعذر تحديد الموقع";
 
     }
 
-    else if(error.code === 3){
+    else if(
+        error.code === 3
+    ){
 
         status.textContent =
         "⚠️ انتهت مهلة GPS";
@@ -921,4 +1245,4 @@ function gpsError(error){
 </script>
 
 </body>
-</html>
+    </html>
