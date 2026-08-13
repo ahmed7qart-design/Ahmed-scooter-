@@ -21,7 +21,7 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 body{
     margin:0;
-    background:white;
+    background:#fff;
     color:#111;
     font-family:Arial,sans-serif;
 }
@@ -30,19 +30,19 @@ body{
     width:100%;
     max-width:500px;
     margin:auto;
-    padding:18px 14px 30px;
+    padding:15px;
 }
 
 h1{
     text-align:center;
-    margin:5px 0 20px;
+    margin:8px 0 18px;
 }
 
 .box{
     background:#f5f5f5;
     border:1px solid #ddd;
     border-radius:18px;
-    padding:16px;
+    padding:15px;
     margin-bottom:10px;
     text-align:center;
 }
@@ -50,12 +50,12 @@ h1{
 .label{
     display:block;
     color:#666;
-    margin-bottom:6px;
+    margin-bottom:5px;
 }
 
 .value{
     display:block;
-    font-size:38px;
+    font-size:34px;
     font-weight:bold;
 }
 
@@ -68,17 +68,16 @@ h1{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
-    margin-top:18px;
+    margin-top:15px;
 }
 
 button{
+    height:56px;
     border:0;
-    border-radius:17px;
-    height:58px;
+    border-radius:16px;
     color:white;
     font-size:18px;
     font-weight:bold;
-    cursor:pointer;
 }
 
 #start{
@@ -91,8 +90,8 @@ button{
 
 #bluetooth{
     width:100%;
-    margin-top:10px;
     background:#1976d2;
+    margin-top:10px;
 }
 
 #status,
@@ -102,14 +101,6 @@ button{
     color:#666;
 }
 
-#map{
-    width:100%;
-    height:370px;
-    border-radius:20px;
-    overflow:hidden;
-    border:1px solid #ddd;
-}
-
 .map-title{
     text-align:center;
     font-size:21px;
@@ -117,11 +108,19 @@ button{
     margin:18px 0 10px;
 }
 
+#map{
+    height:370px;
+    width:100%;
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid #ddd;
+}
+
 .info{
-    margin-top:15px;
     background:#f5f5f5;
     border-radius:18px;
     padding:15px;
+    margin-top:15px;
 }
 
 .row{
@@ -135,9 +134,6 @@ button{
     border-bottom:0;
 }
 
-
-/* سهم السكوتر */
-
 .scooter-arrow{
     background:transparent !important;
     border:0 !important;
@@ -146,63 +142,37 @@ button{
 .arrow-marker{
     width:50px;
     height:50px;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
-    font-size:46px;
+    font-size:45px;
     color:#0878ff;
-
     text-shadow:
         0 2px 3px white,
         0 0 5px white;
-
-    transform-origin:center;
 }
-
-
-/* علامة الرادار */
 
 .radar-icon{
     background:#e53935;
-    color:white;
-
+    color:#fff;
     width:38px;
     height:38px;
-
     border-radius:50%;
-
     display:flex;
     align-items:center;
     justify-content:center;
-
     font-size:20px;
-
     border:3px solid white;
-
-    box-shadow:0 2px 8px #777;
 }
 
-
-/* تنبيه الرادار */
-
 #radarAlert{
-
     display:none;
-
     background:#fff3cd;
-
     border:2px solid #ff9800;
-
     border-radius:17px;
-
     padding:14px;
-
     margin:12px 0;
-
     text-align:center;
-
     font-weight:bold;
 }
 
@@ -222,6 +192,22 @@ button{
 <h1>🛴 Scooter GPS</h1>
 
 
+<!-- الساعة -->
+
+<div class="box">
+
+<span class="label">
+🕐 الساعة
+</span>
+
+<span class="value"
+id="clock">
+00:00:00
+</span>
+
+</div>
+
+
 <!-- السرعة -->
 
 <div class="box">
@@ -230,7 +216,8 @@ button{
 السرعة الحالية
 </span>
 
-<span class="value" id="currentSpeed">
+<span class="value"
+id="currentSpeed">
 0.0
 </span>
 
@@ -249,7 +236,8 @@ button{
 أعلى سرعة
 </span>
 
-<span class="value" id="maxSpeed">
+<span class="value"
+id="maxSpeed">
 0.0
 </span>
 
@@ -260,7 +248,7 @@ button{
 </div>
 
 
-<!-- المتوسط -->
+<!-- متوسط السرعة -->
 
 <div class="box">
 
@@ -268,7 +256,8 @@ button{
 متوسط السرعة
 </span>
 
-<span class="value" id="averageSpeed">
+<span class="value"
+id="averageSpeed">
 0.0
 </span>
 
@@ -287,7 +276,8 @@ button{
 المسافة المقطوعة
 </span>
 
-<span class="value" id="distance">
+<span class="value"
+id="distance">
 0.00
 </span>
 
@@ -298,7 +288,7 @@ button{
 </div>
 
 
-<!-- الوقت -->
+<!-- مدة الرحلة -->
 
 <div class="box">
 
@@ -306,14 +296,15 @@ button{
 مدة الرحلة
 </span>
 
-<span class="value" id="time">
+<span class="value"
+id="tripTime">
 00:00:00
 </span>
 
 </div>
 
 
-<!-- درجة الحرارة -->
+<!-- الحرارة -->
 
 <div class="box">
 
@@ -321,7 +312,8 @@ button{
 🌡️ درجة الحرارة
 </span>
 
-<span class="value" id="temperature">
+<span class="value"
+id="temperature">
 --
 </span>
 
@@ -332,20 +324,16 @@ button{
 </div>
 
 
-<!-- الأزرار -->
+<!-- أزرار الرحلة -->
 
 <div class="buttons">
 
-<button
-id="start"
-type="button">
+<button id="start">
 ▶ تشغيل
 </button>
 
-<button
-id="stop"
-type="button">
-■ غلق
+<button id="stop">
+■ إيقاف
 </button>
 
 </div>
@@ -353,9 +341,7 @@ type="button">
 
 <!-- Bluetooth -->
 
-<button
-id="bluetooth"
-type="button">
+<button id="bluetooth">
 🔵 اتصال Bluetooth
 </button>
 
@@ -400,13 +386,13 @@ type="button">
 <!-- الخريطة -->
 
 <div class="map-title">
-🗺️ خريطة الموقع والرادارات
+🗺️ خريطة الموقع
 </div>
 
 <div id="map"></div>
 
 
-<!-- المعلومات -->
+<!-- معلومات الموقع -->
 
 <div class="info">
 
@@ -473,12 +459,46 @@ src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
 
 <script>
 
-/* =====================================
+/* ==============================
+   الساعة
+============================== */
+
+function updateClock(){
+
+    const now = new Date();
+
+    const h =
+        String(now.getHours())
+        .padStart(2,"0");
+
+    const m =
+        String(now.getMinutes())
+        .padStart(2,"0");
+
+    const s =
+        String(now.getSeconds())
+        .padStart(2,"0");
+
+    document.getElementById("clock")
+        .textContent =
+        h + ":" + m + ":" + s;
+}
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* ==============================
    الخريطة
-===================================== */
+============================== */
 
 const map =
-L.map("map").setView(
+L.map("map")
+.setView(
     [31.2001,29.9187],
     15
 );
@@ -493,9 +513,9 @@ L.tileLayer(
 ).addTo(map);
 
 
-/* =====================================
+/* ==============================
    سهم السكوتر
-===================================== */
+============================== */
 
 const arrowIcon =
 L.divIcon({
@@ -503,7 +523,7 @@ L.divIcon({
     className:"scooter-arrow",
 
     html:
-    '<div class="arrow-marker">⬆</div>',
+        '<div class="arrow-marker">⬆</div>',
 
     iconSize:[50,50],
 
@@ -515,34 +535,32 @@ L.divIcon({
 let scooterMarker = null;
 
 
-/* =====================================
+/* ==============================
    خط الرحلة
-===================================== */
+============================== */
 
 let routePoints = [];
-
 
 let routeLine =
 L.polyline(
     [],
     {
         color:"#0878ff",
-        weight:5,
-        opacity:.8
+        weight:5
     }
 ).addTo(map);
 
 
-/* =====================================
-   بيانات الرادارات
+/* ==============================
+   الرادارات
 
-   ضع البيانات الحقيقية هنا
-===================================== */
+   ضع بيانات حقيقية هنا
+============================== */
 
 const radarData = [
 
     /*
-    مثال فقط:
+    مثال:
 
     {
         lat:31.2001,
@@ -561,7 +579,7 @@ L.divIcon({
     className:"radar-wrapper",
 
     html:
-    '<div class="radar-icon">🚨</div>',
+        '<div class="radar-icon">🚨</div>',
 
     iconSize:[38,38],
 
@@ -573,60 +591,50 @@ L.divIcon({
 let radarMarkers = [];
 
 
-function drawRadars(){
+radarData.forEach(
+    function(radar){
 
-    radarData.forEach(
-        function(radar){
-
-            const marker =
-            L.marker(
-                [
-                    radar.lat,
-                    radar.lon
-                ],
-                {
-                    icon:radarIcon
-                }
-            ).addTo(map);
+        const marker =
+        L.marker(
+            [
+                radar.lat,
+                radar.lon
+            ],
+            {
+                icon:radarIcon
+            }
+        ).addTo(map);
 
 
-            marker.bindPopup(
+        marker.bindPopup(
 
-                "🚨 رادار سرعة" +
-                "<br>" +
-                "الحد الأقصى: " +
+            "🚨 رادار سرعة" +
+            "<br>" +
+            "الحد الأقصى: " +
 
-                (
-                    radar.limit
-                    ?
-                    radar.limit + " كم/س"
-                    :
-                    "غير معروف"
-                )
+            (
+                radar.limit
+                ?
+                radar.limit + " كم/س"
+                :
+                "غير معروف"
+            )
 
-            );
-
-
-            radarMarkers.push({
-
-                marker:marker,
-
-                data:radar
-
-            });
-
-        }
-    );
-
-}
+        );
 
 
-drawRadars();
+        radarMarkers.push({
+            marker:marker,
+            data:radar
+        });
+
+    }
+);
 
 
-/* =====================================
+/* ==============================
    المتغيرات
-===================================== */
+============================== */
 
 let running = false;
 
@@ -646,12 +654,14 @@ let speedTotal = 0;
 
 let speedCount = 0;
 
+let lastWeatherTime = 0;
+
 let bluetoothDevice = null;
 
 
-/* =====================================
+/* ==============================
    العناصر
-===================================== */
+============================== */
 
 const currentSpeed =
 document.getElementById(
@@ -673,9 +683,9 @@ document.getElementById(
     "distance"
 );
 
-const time =
+const tripTime =
 document.getElementById(
-    "time"
+    "tripTime"
 );
 
 const temperature =
@@ -688,50 +698,10 @@ document.getElementById(
     "status"
 );
 
-const latitude =
-document.getElementById(
-    "latitude"
-);
 
-const longitude =
-document.getElementById(
-    "longitude"
-);
-
-const direction =
-document.getElementById(
-    "direction"
-);
-
-const bluetoothStatus =
-document.getElementById(
-    "bluetoothStatus"
-);
-
-const radarAlert =
-document.getElementById(
-    "radarAlert"
-);
-
-const radarDistance =
-document.getElementById(
-    "radarDistance"
-);
-
-const radarLimit =
-document.getElementById(
-    "radarLimit"
-);
-
-const nearestRadar =
-document.getElementById(
-    "nearestRadar"
-);
-
-
-/* =====================================
-   تشغيل الرحلة
-===================================== */
+/* ==============================
+   تشغيل
+============================== */
 
 document.getElementById("start")
 .onclick = function(){
@@ -744,7 +714,7 @@ document.getElementById("start")
     if(!navigator.geolocation){
 
         status.textContent =
-        "⚠️ GPS غير مدعوم";
+            "⚠️ GPS غير مدعوم";
 
         return;
     }
@@ -753,7 +723,7 @@ document.getElementById("start")
     running = true;
 
     startTime =
-    Date.now();
+        Date.now();
 
     lastPosition = null;
 
@@ -772,55 +742,53 @@ document.getElementById("start")
 
 
     currentSpeed.textContent =
-    "0.0";
+        "0.0";
 
     maxSpeed.textContent =
-    "0.0";
+        "0.0";
 
     averageSpeed.textContent =
-    "0.0";
+        "0.0";
 
     distance.textContent =
-    "0.00";
+        "0.00";
 
-    time.textContent =
-    "00:00:00";
+    tripTime.textContent =
+        "00:00:00";
 
 
     status.textContent =
-    "🟢 الرحلة تعمل";
+        "🟢 الرحلة تعمل";
 
 
     timerID =
-    setInterval(
-        updateTime,
-        1000
-    );
+        setInterval(
+            updateTripTime,
+            1000
+        );
 
 
     watchID =
-    navigator.geolocation.watchPosition(
+        navigator.geolocation.watchPosition(
 
-        updateGPS,
+            updateGPS,
 
-        gpsError,
+            gpsError,
 
-        {
-            enableHighAccuracy:true,
+            {
+                enableHighAccuracy:true,
+                maximumAge:1000,
+                timeout:15000
+            }
 
-            maximumAge:1000,
-
-            timeout:15000
-        }
-
-    );
+        );
 
 };
 
 
-/* =====================================
+/* ==============================
    GPS
-===================================== */
+============================== */
 
 function updateGPS(position){
 
@@ -830,15 +798,14 @@ function updateGPS(position){
 
 
     const lat =
-    position.coords.latitude;
-
+        position.coords.latitude;
 
     const lon =
-    position.coords.longitude;
+        position.coords.longitude;
 
 
     let speed =
-    position.coords.speed;
+        position.coords.speed;
 
 
     if(
@@ -857,7 +824,7 @@ function updateGPS(position){
 
 
     currentSpeed.textContent =
-    speed.toFixed(1);
+        speed.toFixed(1);
 
 
     if(
@@ -865,13 +832,13 @@ function updateGPS(position){
     ){
 
         maximumSpeed =
-        speed;
+            speed;
 
     }
 
 
     maxSpeed.textContent =
-    maximumSpeed.toFixed(1);
+        maximumSpeed.toFixed(1);
 
 
     speedTotal += speed;
@@ -880,31 +847,31 @@ function updateGPS(position){
 
 
     averageSpeed.textContent =
-    (
-        speedTotal /
-        speedCount
-    ).toFixed(1);
+        (
+            speedTotal /
+            speedCount
+        ).toFixed(1);
 
 
-    /* حساب المسافة */
+    /* المسافة */
 
     if(lastPosition){
 
         const d =
-        calculateDistance(
+            calculateDistance(
 
-            lastPosition.lat,
-            lastPosition.lon,
+                lastPosition.lat,
+                lastPosition.lon,
 
-            lat,
-            lon
+                lat,
+                lon
 
-        );
+            );
 
 
         if(
             d >= 0 &&
-            d < .2
+            d < 0.2
         ){
 
             totalDistance += d;
@@ -915,31 +882,31 @@ function updateGPS(position){
 
 
     lastPosition = {
-
         lat:lat,
         lon:lon
-
     };
 
 
     distance.textContent =
-    totalDistance.toFixed(2);
+        totalDistance.toFixed(2);
 
 
-    /* الإحداثيات */
+    document.getElementById(
+        "latitude"
+    ).textContent =
+        lat.toFixed(6);
 
-    latitude.textContent =
-    lat.toFixed(6);
 
-
-    longitude.textContent =
-    lon.toFixed(6);
+    document.getElementById(
+        "longitude"
+    ).textContent =
+        lon.toFixed(6);
 
 
     /* الاتجاه */
 
     const heading =
-    position.coords.heading;
+        position.coords.heading;
 
 
     if(
@@ -948,27 +915,31 @@ function updateGPS(position){
         heading >= 0
     ){
 
-        direction.textContent =
-        getDirection(heading);
+        document.getElementById(
+            "direction"
+        ).textContent =
+            getDirection(heading);
+
 
         rotateArrow(heading);
 
     }
 
 
-    /* السهم */
+    /* إنشاء السهم */
 
     if(!scooterMarker){
 
         scooterMarker =
-        L.marker(
-            [lat,lon],
-            {
-                icon:arrowIcon
-            }
-        ).addTo(map);
+            L.marker(
+                [lat,lon],
+                {
+                    icon:arrowIcon
+                }
+            ).addTo(map);
 
-    }else{
+    }
+    else{
 
         scooterMarker.setLatLng(
             [lat,lon]
@@ -977,7 +948,7 @@ function updateGPS(position){
     }
 
 
-    /* رسم الطريق */
+    /* رسم المسار */
 
     routePoints.push(
         [lat,lon]
@@ -1000,15 +971,6 @@ function updateGPS(position){
     );
 
 
-    /* الرادار */
-
-    checkNearestRadar(
-        lat,
-        lon,
-        speed
-    );
-
-
     /* الطقس */
 
     getWeather(
@@ -1016,42 +978,41 @@ function updateGPS(position){
         lon
     );
 
+
+    /* الرادار */
+
+    checkRadar(
+        lat,
+        lon,
+        speed
+    );
+
 }
 
 
-/* =====================================
-   درجة الحرارة
-===================================== */
-
-let lastWeatherTime = 0;
-
+/* ==============================
+   الطقس
+============================== */
 
 async function getWeather(
     lat,
     lon
 ){
 
-    /*
-    لا نطلب الطقس مع كل تحديث GPS.
-    ننتظر دقيقة بين كل طلب.
-    */
-
     const now =
-    Date.now();
+        Date.now();
 
 
     if(
         now - lastWeatherTime <
         60000
     ){
-
         return;
-
     }
 
 
     lastWeatherTime =
-    now;
+        now;
 
 
     try{
@@ -1072,20 +1033,16 @@ async function getWeather(
 
 
         const response =
-        await fetch(url);
+            await fetch(url);
 
 
         if(!response.ok){
-
-            throw new Error(
-                "Weather error"
-            );
-
+            throw new Error("Weather error");
         }
 
 
         const data =
-        await response.json();
+            await response.json();
 
 
         if(
@@ -1096,81 +1053,79 @@ async function getWeather(
         ){
 
             temperature.textContent =
-
-            data.current.temperature_2m
-            .toFixed(1);
+                data.current.temperature_2m
+                .toFixed(1);
 
         }
 
     }
-
     catch(error){
 
-        console.log(
-            "Weather:",
-            error
-        );
+        console.log(error);
 
         temperature.textContent =
-        "--";
+            "--";
 
     }
 
 }
 
 
-/* =====================================
+/* ==============================
    الرادار
-===================================== */
+============================== */
 
-function checkNearestRadar(
+function checkRadar(
     lat,
     lon,
-    currentSpeed
+    speed
 ){
 
     if(
         radarMarkers.length === 0
     ){
 
-        radarAlert.style.display =
-        "none";
+        document.getElementById(
+            "nearestRadar"
+        ).textContent =
+            "لا توجد بيانات";
 
-        nearestRadar.textContent =
-        "لا توجد بيانات";
+        document.getElementById(
+            "radarAlert"
+        ).style.display =
+            "none";
 
         return;
-
     }
 
 
     let closest = null;
 
     let closestDistance =
-    Infinity;
+        Infinity;
 
 
     radarMarkers.forEach(
         function(item){
 
             const radar =
-            item.data;
+                item.data;
 
 
             const d =
-            calculateDistance(
+                calculateDistance(
 
-                lat,
-                lon,
+                    lat,
+                    lon,
 
-                radar.lat,
-                radar.lon
+                    radar.lat,
+                    radar.lon
 
-            );
+                );
 
 
             const meters =
-            d * 1000;
+                d * 1000;
 
 
             if(
@@ -1179,10 +1134,10 @@ function checkNearestRadar(
             ){
 
                 closestDistance =
-                meters;
+                    meters;
 
                 closest =
-                radar;
+                    radar;
 
             }
 
@@ -1195,72 +1150,86 @@ function checkNearestRadar(
     }
 
 
-    nearestRadar.textContent =
-    Math.round(
-        closestDistance
-    ) + " متر";
+    document.getElementById(
+        "nearestRadar"
+    ).textContent =
+        Math.round(
+            closestDistance
+        ) + " متر";
 
 
     if(
         closestDistance <= 500
     ){
 
-        radarAlert.style.display =
-        "block";
+        document.getElementById(
+            "radarAlert"
+        ).style.display =
+            "block";
 
 
-        radarDistance.textContent =
-        Math.round(
-            closestDistance
-        );
+        document.getElementById(
+            "radarDistance"
+        ).textContent =
+            Math.round(
+                closestDistance
+            );
 
 
         if(closest.limit){
 
-            radarLimit.textContent =
-            closest.limit +
-            " كم/س";
+            document.getElementById(
+                "radarLimit"
+            ).textContent =
+                closest.limit +
+                " كم/س";
 
 
             if(
-                currentSpeed >
+                speed >
                 closest.limit
             ){
 
                 status.textContent =
-                "⚠️ خفّض السرعة";
+                    "⚠️ خفّض السرعة";
 
             }
 
-        }else{
+        }
+        else{
 
-            radarLimit.textContent =
-            "غير معروف";
+            document.getElementById(
+                "radarLimit"
+            ).textContent =
+                "غير معروف";
 
         }
 
-    }else{
+    }
+    else{
 
-        radarAlert.style.display =
-        "none";
+        document.getElementById(
+            "radarAlert"
+        ).style.display =
+            "none";
 
     }
 
 }
 
 
-/* =====================================
+/* ==============================
    تدوير السهم
-===================================== */
+============================== */
 
 function rotateArrow(
     degrees
 ){
 
     const arrow =
-    document.querySelector(
-        ".arrow-marker"
-    );
+        document.querySelector(
+            ".arrow-marker"
+        );
 
 
     if(!arrow){
@@ -1269,16 +1238,16 @@ function rotateArrow(
 
 
     arrow.style.transform =
-    "rotate(" +
-    degrees +
-    "deg)";
+        "rotate(" +
+        degrees +
+        "deg)";
 
 }
 
 
-/* =====================================
+/* ==============================
    الاتجاه
-===================================== */
+============================== */
 
 function getDirection(
     degrees
@@ -1307,9 +1276,9 @@ function getDirection(
 }
 
 
-/* =====================================
-   حساب المسافة
-===================================== */
+/* ==============================
+   المسافة
+============================== */
 
 function calculateDistance(
 
@@ -1325,46 +1294,46 @@ function calculateDistance(
 
 
     const dLat =
-    (lat2-lat1) *
-    Math.PI / 180;
+        (lat2-lat1) *
+        Math.PI / 180;
 
 
     const dLon =
-    (lon2-lon1) *
-    Math.PI / 180;
+        (lon2-lon1) *
+        Math.PI / 180;
 
 
     const a =
 
-    Math.sin(dLat/2) *
-    Math.sin(dLat/2)
+        Math.sin(dLat/2) *
+        Math.sin(dLat/2)
 
-    +
+        +
 
-    Math.cos(
-        lat1 *
-        Math.PI / 180
-    )
+        Math.cos(
+            lat1 *
+            Math.PI / 180
+        )
 
-    *
+        *
 
-    Math.cos(
-        lat2 *
-        Math.PI / 180
-    )
+        Math.cos(
+            lat2 *
+            Math.PI / 180
+        )
 
-    *
+        *
 
-    Math.sin(dLon/2) *
-    Math.sin(dLon/2);
+        Math.sin(dLon/2) *
+        Math.sin(dLon/2);
 
 
     const c =
-    2 *
-    Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1-a)
-    );
+        2 *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1-a)
+        );
 
 
     return R * c;
@@ -1372,11 +1341,11 @@ function calculateDistance(
 }
 
 
-/* =====================================
-   الوقت
-===================================== */
+/* ==============================
+   وقت الرحلة
+============================== */
 
-function updateTime(){
+function updateTripTime(){
 
     if(!running){
         return;
@@ -1384,48 +1353,53 @@ function updateTime(){
 
 
     const seconds =
-    Math.floor(
+        Math.floor(
 
-        (
-            Date.now() -
-            startTime
-        ) / 1000
+            (
+                Date.now() -
+                startTime
+            ) / 1000
 
-    );
+        );
 
 
     const hours =
-    Math.floor(
-        seconds / 3600
-    );
+        Math.floor(
+            seconds / 3600
+        );
 
 
     const minutes =
-    Math.floor(
-        (seconds % 3600) / 60
-    );
+        Math.floor(
+            (seconds % 3600) / 60
+        );
 
 
     const secs =
-    seconds % 60;
+        seconds % 60;
 
 
-    time.textContent =
+    tripTime.textContent =
 
-    String(hours).padStart(2,"0")
-    + ":" +
+        String(hours)
+        .padStart(2,"0")
 
-    String(minutes).padStart(2,"0")
-    + ":" +
+        + ":" +
 
-    String(secs).padStart(2,"0");
+        String(minutes)
+        .padStart(2,"0")
+
+        + ":" +
+
+        String(secs)
+        .padStart(2,"0");
 
 }
 
 
-/* =====================================
-   إيقاف الرحلة
-===================================== */
+/* ==============================
+   إيقاف
+============================== */
 
 document.getElementById("stop")
 .onclick = function(){
@@ -1456,18 +1430,18 @@ document.getElementById("stop")
 
 
     currentSpeed.textContent =
-    "0.0";
+        "0.0";
 
 
     status.textContent =
-    "🔴 الرحلة متوقفة";
+        "🔴 الرحلة متوقفة";
 
 };
 
 
-/* =====================================
+/* ==============================
    Bluetooth
-===================================== */
+============================== */
 
 document.getElementById("bluetooth")
 .onclick =
@@ -1475,30 +1449,35 @@ async function(){
 
     if(!navigator.bluetooth){
 
-        bluetoothStatus.textContent =
-        "❌ غير مدعوم";
+        document.getElementById(
+            "bluetoothStatus"
+        ).textContent =
+            "❌ Bluetooth غير مدعوم";
 
         return;
-
     }
 
 
     try{
 
-        bluetoothStatus.textContent =
-        "🔵 جاري البحث...";
+        document.getElementById(
+            "bluetoothStatus"
+        ).textContent =
+            "🔵 جاري البحث...";
 
 
         bluetoothDevice =
-        await navigator.bluetooth.requestDevice({
+            await navigator.bluetooth.requestDevice({
 
-            acceptAllDevices:true
+                acceptAllDevices:true
 
-        });
+            });
 
 
-        bluetoothStatus.textContent =
-        "🟡 تم اختيار الجهاز";
+        document.getElementById(
+            "bluetoothStatus"
+        ).textContent =
+            "🟡 تم اختيار الجهاز";
 
 
         if(
@@ -1508,77 +1487,69 @@ async function(){
             await bluetoothDevice.gatt.connect();
 
 
-            bluetoothStatus.textContent =
-            "🟢 متصل";
-
-
-            status.textContent =
-            "🟢 Bluetooth متصل";
+            document.getElementById(
+                "bluetoothStatus"
+            ).textContent =
+                "🟢 Bluetooth متصل";
 
         }
 
 
         bluetoothDevice.addEventListener(
-
             "gattserverdisconnected",
-
             function(){
 
-                bluetoothStatus.textContent =
-                "🔴 غير متصل";
-
-                status.textContent =
-                "🔴 Bluetooth انفصل";
+                document.getElementById(
+                    "bluetoothStatus"
+                ).textContent =
+                    "🔴 Bluetooth غير متصل";
 
             }
-
         );
 
     }
-
     catch(error){
 
         console.log(error);
 
-        bluetoothStatus.textContent =
-        "🔴 غير متصل";
+        document.getElementById(
+            "bluetoothStatus"
+        ).textContent =
+            "🔴 لم يتم الاتصال";
 
     }
 
 };
 
 
-/* =====================================
+/* ==============================
    أخطاء GPS
-===================================== */
+============================== */
 
 function gpsError(error){
 
     if(error.code === 1){
 
         status.textContent =
-        "⚠️ اسمح للتطبيق باستخدام الموقع";
+            "⚠️ اسمح للتطبيق باستخدام الموقع";
 
     }
-
     else if(error.code === 2){
 
         status.textContent =
-        "⚠️ تعذر تحديد الموقع";
+            "⚠️ تعذر تحديد الموقع";
 
     }
-
     else if(error.code === 3){
 
         status.textContent =
-        "⚠️ انتهت مهلة GPS";
+            "⚠️ انتهت مهلة GPS";
 
     }
-
     else{
 
         status.textContent =
-        "⚠️ حدث خطأ في GPS";
+            "⚠️ حدث خطأ في GPS";
 
     }
 
@@ -1587,4 +1558,5 @@ function gpsError(error){
 </script>
 
 </body>
-</html>
+
+    </html>
