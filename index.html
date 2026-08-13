@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
 <title>Scooter GPS</title>
 
-<!-- Leaflet -->
 <link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
 <style>
 
@@ -18,8 +20,8 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 body{
     margin:0;
-    background:#ffffff;
-    color:#111111;
+    background:white;
+    color:#111;
     font-family:Arial,sans-serif;
 }
 
@@ -27,20 +29,23 @@ body{
     width:100%;
     max-width:500px;
     margin:auto;
-    padding:20px 15px;
+    padding:20px 15px 30px;
 }
 
 h1{
     text-align:center;
-    margin:5px 0 20px;
     font-size:30px;
+    margin:5px 0 20px;
 }
 
-/* البيانات */
+
+/* =========================
+   العدادات
+========================= */
 
 .box{
     background:#f5f5f5;
-    border:1px solid #dddddd;
+    border:1px solid #ddd;
     border-radius:18px;
     padding:18px;
     margin-bottom:10px;
@@ -61,11 +66,16 @@ h1{
 }
 
 .unit{
+    display:block;
     color:#777;
     font-size:14px;
+    margin-top:3px;
 }
 
-/* الأزرار */
+
+/* =========================
+   الأزرار
+========================= */
 
 .buttons{
     display:flex;
@@ -75,16 +85,16 @@ h1{
 
 button{
     flex:1;
-    height:58px;
+    height:60px;
     border:0;
-    border-radius:16px;
+    border-radius:17px;
     color:white;
     font-size:19px;
     font-weight:bold;
 }
 
 #start{
-    background:#18a765;
+    background:#19a463;
 }
 
 #stop{
@@ -94,40 +104,65 @@ button{
 #status{
     text-align:center;
     color:#666;
-    margin-bottom:15px;
+    margin:12px 0 18px;
 }
 
-/* الخريطة */
+
+/* =========================
+   الخريطة
+========================= */
 
 .map-title{
     text-align:center;
-    font-size:20px;
+    font-size:21px;
     font-weight:bold;
-    margin:15px 0 10px;
+    margin-bottom:10px;
 }
 
 #map{
     width:100%;
-    height:350px;
+    height:360px;
     border-radius:20px;
-    overflow:hidden;
     border:1px solid #ddd;
+    overflow:hidden;
 }
 
-/* السهم */
+
+/* =========================
+   سهم السكوتر
+========================= */
+
+.scooter-arrow{
+    background:transparent !important;
+    border:0 !important;
+}
 
 .arrow-marker{
-    width:42px;
-    height:42px;
+
+    width:50px;
+    height:50px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:38px;
-    line-height:42px;
+
+    font-size:48px;
+    font-weight:bold;
+
+    color:#0878ff;
+
+    text-shadow:
+        0 2px 3px white,
+        0 0 5px white;
+
     transform-origin:center center;
+
 }
 
-/* المعلومات */
+
+/* =========================
+   معلومات GPS
+========================= */
 
 .info{
     margin-top:15px;
@@ -139,16 +174,18 @@ button{
 .row{
     display:flex;
     justify-content:space-between;
-    padding:10px 0;
+    padding:11px 0;
     border-bottom:1px solid #ddd;
 }
 
 .row:last-child{
-    border-bottom:none;
+    border-bottom:0;
 }
 
 </style>
+
 </head>
+
 
 <body>
 
@@ -165,7 +202,9 @@ button{
 السرعة الحالية
 </span>
 
-<span class="value" id="currentSpeed">
+<span
+class="value"
+id="currentSpeed">
 0.0
 </span>
 
@@ -184,7 +223,9 @@ button{
 أعلى سرعة
 </span>
 
-<span class="value" id="maxSpeed">
+<span
+class="value"
+id="maxSpeed">
 0.0
 </span>
 
@@ -203,7 +244,9 @@ button{
 متوسط السرعة
 </span>
 
-<span class="value" id="averageSpeed">
+<span
+class="value"
+id="averageSpeed">
 0.0
 </span>
 
@@ -222,7 +265,9 @@ button{
 المسافة المقطوعة
 </span>
 
-<span class="value" id="distance">
+<span
+class="value"
+id="distance">
 0.00
 </span>
 
@@ -241,7 +286,9 @@ button{
 مدة الرحلة
 </span>
 
-<span class="value" id="time">
+<span
+class="value"
+id="time">
 00:00:00
 </span>
 
@@ -264,11 +311,13 @@ button{
 
 
 <div id="status">
-الرحلة متوقفة
+🔴 الرحلة متوقفة
 </div>
 
 
-<!-- الخريطة -->
+<!-- =========================
+     الخريطة
+========================= -->
 
 <div class="map-title">
 🗺️ موقع السكوتر
@@ -277,40 +326,65 @@ button{
 <div id="map"></div>
 
 
-<!-- معلومات GPS -->
+<!-- =========================
+     معلومات GPS
+========================= -->
 
 <div class="info">
 
 <div class="row">
-<span>خط العرض</span>
-<strong id="latitude">--</strong>
+
+<span>
+📍 خط العرض
+</span>
+
+<strong id="latitude">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>خط الطول</span>
-<strong id="longitude">--</strong>
+
+<span>
+📍 خط الطول
+</span>
+
+<strong id="longitude">
+--
+</strong>
+
 </div>
+
 
 <div class="row">
-<span>الاتجاه</span>
-<strong id="direction">--</strong>
-</div>
+
+<span>
+🧭 الاتجاه
+</span>
+
+<strong id="direction">
+--
+</strong>
 
 </div>
 
 </div>
 
+</div>
 
-<!-- Leaflet -->
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
 
 
 <script>
 
-/* =========================
-   الخريطة
-========================= */
+/* =================================
+   إنشاء الخريطة
+================================= */
 
 const map =
 L.map("map").setView(
@@ -319,7 +393,7 @@ L.map("map").setView(
 );
 
 
-/* OpenStreetMap */
+/* خريطة OpenStreetMap */
 
 L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -330,26 +404,31 @@ L.tileLayer(
 ).addTo(map);
 
 
-/* السهم */
+/* =================================
+   أيقونة السهم
+================================= */
 
 const arrowIcon =
 L.divIcon({
 
-    className:"",
+    className:"scooter-arrow",
 
-    html:'<div class="arrow-marker">⬆️</div>',
+    html:
+    '<div class="arrow-marker">⬆</div>',
 
-    iconSize:[42,42],
+    iconSize:[50,50],
 
-    iconAnchor:[21,21]
+    iconAnchor:[25,25]
 
 });
 
 
+/* مؤشر السكوتر */
+
 let scooterMarker = null;
 
 
-/* رسم الطريق */
+/* خط الطريق */
 
 let routePoints = [];
 
@@ -357,15 +436,16 @@ let routeLine =
 L.polyline(
     [],
     {
-        color:"#1976d2",
-        weight:5
+        color:"#0878ff",
+        weight:5,
+        opacity:0.8
     }
 ).addTo(map);
 
 
-/* =========================
+/* =================================
    المتغيرات
-========================= */
+================================= */
 
 let running = false;
 
@@ -386,9 +466,9 @@ let speedTotal = 0;
 let speedCount = 0;
 
 
-/* =========================
+/* =================================
    عناصر الصفحة
-========================= */
+================================= */
 
 const currentSpeed =
 document.getElementById(
@@ -436,13 +516,12 @@ document.getElementById(
 );
 
 
-/* =========================
-   تشغيل
-========================= */
+/* =================================
+   زر التشغيل
+================================= */
 
-document.getElementById(
-    "start"
-).onclick = function(){
+document.getElementById("start")
+.onclick = function(){
 
     if(running){
         return;
@@ -460,38 +539,62 @@ document.getElementById(
 
     running = true;
 
-    startTime = Date.now();
 
-    lastPosition = null;
-
-    totalDistance = 0;
-
-    maximumSpeed = 0;
-
-    speedTotal = 0;
-
-    speedCount = 0;
+    startTime =
+    Date.now();
 
 
-    routePoints = [];
+    lastPosition =
+    null;
 
-    routeLine.setLatLngs([]);
+
+    totalDistance =
+    0;
+
+
+    maximumSpeed =
+    0;
+
+
+    speedTotal =
+    0;
+
+
+    speedCount =
+    0;
+
+
+    routePoints =
+    [];
+
+
+    routeLine.setLatLngs(
+        []
+    );
 
 
     currentSpeed.textContent =
     "0.0";
 
+
     maxSpeed.textContent =
     "0.0";
+
 
     averageSpeed.textContent =
     "0.0";
 
+
     distance.textContent =
     "0.00";
 
+
     time.textContent =
     "00:00:00";
+
+
+    direction.textContent =
+    "--";
 
 
     status.textContent =
@@ -525,9 +628,9 @@ document.getElementById(
 };
 
 
-/* =========================
-   GPS
-========================= */
+/* =================================
+   تحديث GPS
+================================= */
 
 function updateGPS(position){
 
@@ -539,9 +642,14 @@ function updateGPS(position){
     const lat =
     position.coords.latitude;
 
+
     const lon =
     position.coords.longitude;
 
+
+    /* =============================
+       السرعة
+    ============================= */
 
     let speed =
     position.coords.speed;
@@ -559,21 +667,24 @@ function updateGPS(position){
     }
 
 
-    /* m/s → km/h */
+    /* m/s إلى km/h */
 
     speed =
     speed * 3.6;
 
 
-    /* السرعة الحالية */
-
     currentSpeed.textContent =
     speed.toFixed(1);
 
 
-    /* أعلى سرعة */
+    /* =============================
+       أعلى سرعة
+    ============================= */
 
-    if(speed > maximumSpeed){
+    if(
+        speed >
+        maximumSpeed
+    ){
 
         maximumSpeed =
         speed;
@@ -585,7 +696,9 @@ function updateGPS(position){
     maximumSpeed.toFixed(1);
 
 
-    /* المتوسط */
+    /* =============================
+       متوسط السرعة
+    ============================= */
 
     speedTotal += speed;
 
@@ -600,7 +713,9 @@ function updateGPS(position){
     ).toFixed(1);
 
 
-    /* المسافة */
+    /* =============================
+       حساب المسافة
+    ============================= */
 
     if(lastPosition !== null){
 
@@ -619,7 +734,8 @@ function updateGPS(position){
 
 
         /*
-        تجاهل قفزات GPS الكبيرة
+        تجاهل قفزات GPS
+        غير الطبيعية.
         */
 
         if(
@@ -647,18 +763,23 @@ function updateGPS(position){
     totalDistance.toFixed(2);
 
 
-    /* معلومات الموقع */
+    /* =============================
+       إحداثيات الموقع
+    ============================= */
 
     latitude.textContent =
     lat.toFixed(6);
+
 
     longitude.textContent =
     lon.toFixed(6);
 
 
-    /* الاتجاه */
+    /* =============================
+       الاتجاه
+    ============================= */
 
-    let heading =
+    const heading =
     position.coords.heading;
 
 
@@ -669,19 +790,25 @@ function updateGPS(position){
     ){
 
         direction.textContent =
-        getDirection(heading);
+        getDirection(
+            heading
+        );
 
 
-        rotateArrow(heading);
+        rotateArrow(
+            heading
+        );
 
     }
 
 
-    /* =========================
-       تحريك السهم
-    ========================= */
+    /* =============================
+       إنشاء / تحريك السهم
+    ============================= */
 
-    if(scooterMarker === null){
+    if(
+        scooterMarker === null
+    ){
 
         scooterMarker =
         L.marker(
@@ -691,7 +818,9 @@ function updateGPS(position){
             }
         ).addTo(map);
 
-    }else{
+    }
+
+    else{
 
         scooterMarker.setLatLng(
             [lat,lon]
@@ -700,20 +829,23 @@ function updateGPS(position){
     }
 
 
-    /* =========================
+    /* =============================
        رسم الطريق
-    ========================= */
+    ============================= */
 
     routePoints.push(
         [lat,lon]
     );
+
 
     routeLine.setLatLngs(
         routePoints
     );
 
 
-    /* تحريك الخريطة */
+    /* =============================
+       تحريك الخريطة
+    ============================= */
 
     map.setView(
         [lat,lon],
@@ -726,34 +858,40 @@ function updateGPS(position){
 }
 
 
-/* =========================
+/* =================================
    تدوير السهم
-========================= */
+================================= */
 
-function rotateArrow(degrees){
+function rotateArrow(
+    degrees
+){
 
-    const element =
+    const arrow =
     document.querySelector(
         ".arrow-marker"
     );
 
-    if(element){
 
-        element.style.transform =
-        "rotate(" +
-        degrees +
-        "deg)";
-
+    if(!arrow){
+        return;
     }
+
+
+    arrow.style.transform =
+    "rotate(" +
+    degrees +
+    "deg)";
 
 }
 
 
-/* =========================
-   الاتجاه
-========================= */
+/* =================================
+   تحديد الاتجاه
+================================= */
 
-function getDirection(degrees){
+function getDirection(
+    degrees
+){
 
     const directions = [
 
@@ -782,23 +920,28 @@ function getDirection(degrees){
     ) % 8;
 
 
-    return directions[index];
+    return directions[
+        index
+    ];
 
 }
 
 
-/* =========================
+/* =================================
    حساب المسافة
-========================= */
+================================= */
 
 function calculateDistance(
+
     lat1,
     lon1,
     lat2,
     lon2
+
 ){
 
-    const R = 6371;
+    const R =
+    6371;
 
 
     const dLat =
@@ -820,16 +963,14 @@ function calculateDistance(
 
     Math.cos(
         lat1 *
-        Math.PI /
-        180
+        Math.PI / 180
     )
 
     *
 
     Math.cos(
         lat2 *
-        Math.PI /
-        180
+        Math.PI / 180
     )
 
     *
@@ -839,21 +980,25 @@ function calculateDistance(
 
 
     const c =
+
     2 *
     Math.atan2(
+
         Math.sqrt(a),
+
         Math.sqrt(1-a)
+
     );
 
 
-    return R*c;
+    return R * c;
 
 }
 
 
-/* =========================
+/* =================================
    الوقت
-========================= */
+================================= */
 
 function updateTime(){
 
@@ -863,24 +1008,31 @@ function updateTime(){
 
 
     const seconds =
+
     Math.floor(
+
         (
             Date.now() -
             startTime
         ) / 1000
+
     );
 
 
     const hours =
+
     Math.floor(
         seconds / 3600
     );
 
 
     const minutes =
+
     Math.floor(
+
         (seconds % 3600) /
         60
+
     );
 
 
@@ -906,13 +1058,12 @@ function updateTime(){
 }
 
 
-/* =========================
-   إيقاف
-========================= */
+/* =================================
+   زر الغلق
+================================= */
 
-document.getElementById(
-    "stop"
-).onclick = function(){
+document.getElementById("stop")
+.onclick = function(){
 
     if(!running){
         return;
@@ -922,7 +1073,9 @@ document.getElementById(
     running = false;
 
 
-    if(watchID !== null){
+    if(
+        watchID !== null
+    ){
 
         navigator.geolocation.clearWatch(
             watchID
@@ -933,7 +1086,9 @@ document.getElementById(
     }
 
 
-    if(timerID !== null){
+    if(
+        timerID !== null
+    ){
 
         clearInterval(
             timerID
@@ -954,9 +1109,9 @@ document.getElementById(
 };
 
 
-/* =========================
+/* =================================
    أخطاء GPS
-========================= */
+================================= */
 
 function gpsError(error){
 
