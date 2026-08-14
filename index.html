@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b1220">
-<title>LIX / WG TWO Scooter Control</title>
+<title>LIX / WG TWO</title>
 
 <style>
 *{box-sizing:border-box}
@@ -14,7 +14,6 @@ body{
   font-family:Arial,sans-serif;
   background:#080d16;
   color:#fff;
-  min-height:100vh;
   transition:.25s;
 }
 
@@ -30,6 +29,9 @@ header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 
 .light header{
@@ -42,14 +44,14 @@ header{
   font-weight:bold;
 }
 
-.sub{
+.small{
   color:#8b98aa;
-  font-size:13px;
+  font-size:12px;
   margin-top:5px;
 }
 
 main{
-  width:min(900px,94%);
+  width:min(950px,94%);
   margin:auto;
   padding:18px 0 40px;
 }
@@ -70,12 +72,12 @@ main{
 .message{
   display:none;
   padding:15px;
-  margin-bottom:16px;
   border-radius:14px;
-  background:#132b42;
-  border:1px solid #2563eb;
+  margin-bottom:16px;
   text-align:center;
   font-weight:bold;
+  background:#132b42;
+  border:1px solid #2563eb;
 }
 
 .hero{
@@ -84,7 +86,7 @@ main{
 }
 
 .speed{
-  font-size:80px;
+  font-size:82px;
   font-weight:900;
 }
 
@@ -132,9 +134,24 @@ main{
 }
 
 .statValue{
+  margin-top:8px;
   font-size:25px;
   font-weight:bold;
-  margin-top:8px;
+}
+
+.progress{
+  height:10px;
+  background:#303b4f;
+  border-radius:20px;
+  margin-top:12px;
+  overflow:hidden;
+}
+
+.progressBar{
+  width:0%;
+  height:100%;
+  background:#22c55e;
+  transition:.3s;
 }
 
 .row{
@@ -151,7 +168,7 @@ main{
 }
 
 .row:last-child{
-  border-bottom:0;
+  border:0;
 }
 
 .btn{
@@ -168,21 +185,10 @@ main{
   opacity:.5;
 }
 
-.green{
-  background:#16a34a;
-}
-
-.red{
-  background:#dc2626;
-}
-
-.gray{
-  background:#374151;
-}
-
-.full{
-  width:100%;
-}
+.green{background:#16a34a}
+.red{background:#dc2626}
+.orange{background:#ea580c}
+.gray{background:#374151}
 
 .buttons{
   display:grid;
@@ -191,7 +197,7 @@ main{
 }
 
 .map{
-  height:280px;
+  height:300px;
   border-radius:16px;
   position:relative;
   overflow:hidden;
@@ -206,8 +212,8 @@ main{
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:50px;
-  height:50px;
+  width:52px;
+  height:52px;
   border-radius:50%;
   display:grid;
   place-items:center;
@@ -250,7 +256,7 @@ main{
   border-top:1px solid #3b4a62;
 }
 
-.rawData{
+.raw{
   direction:ltr;
   text-align:left;
   background:#070c14;
@@ -258,23 +264,36 @@ main{
   padding:12px;
   max-height:280px;
   overflow:auto;
-  font:12px monospace;
   white-space:pre-wrap;
+  font:12px monospace;
 }
 
-.light .rawData{
+.light .raw{
   background:#f2f4f7;
+}
+
+.warning{
+  background:#3a250c;
+  border:1px solid #b45309;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
 }
 
 footer{
   text-align:center;
   color:#68778c;
-  padding-bottom:25px;
+  padding:20px;
 }
 
 @media(max-width:520px){
+
   .speed{
     font-size:62px;
+  }
+
+  .grid{
+    grid-template-columns:1fr 1fr;
   }
 
   .buttons{
@@ -290,12 +309,15 @@ footer{
 
   <div>
     <div class="logo">🛴 LIX / WG TWO</div>
-    <div class="sub" id="headerStatus">
+
+    <div class="small" id="headerStatus">
       غير متصل
     </div>
   </div>
 
-  <button class="btn gray" onclick="toggleTheme()">
+  <button
+    class="btn gray"
+    onclick="toggleTheme()">
     🌙
   </button>
 
@@ -303,9 +325,14 @@ footer{
 
 <main>
 
-<div id="message" class="message"></div>
+<!-- رسالة الاتصال -->
 
-<!-- الحالة والسرعة -->
+<div
+  id="message"
+  class="message">
+</div>
+
+<!-- Dashboard -->
 
 <section class="panel hero">
 
@@ -319,6 +346,7 @@ footer{
 
   <div class="status">
     <span id="dot" class="dot"></span>
+
     <span id="status">
       السكوتر غير متصل
     </span>
@@ -326,28 +354,71 @@ footer{
 
 </section>
 
-<!-- الإحصائيات -->
+<!-- الإحصائيات الأساسية -->
 
 <section class="grid">
 
   <div class="stat">
-    <div class="statTitle">🔋 البطارية</div>
-    <div class="statValue" id="battery">--%</div>
+
+    <div class="statTitle">
+      🔋 البطارية
+    </div>
+
+    <div
+      class="statValue"
+      id="battery">
+      --%
+    </div>
+
+    <div class="progress">
+      <div
+        id="batteryBar"
+        class="progressBar">
+      </div>
+    </div>
+
   </div>
 
   <div class="stat">
-    <div class="statTitle">📏 المسافة</div>
-    <div class="statValue" id="distance">0.00 كم</div>
+
+    <div class="statTitle">
+      📏 المسافة
+    </div>
+
+    <div
+      class="statValue"
+      id="distance">
+      0.00 كم
+    </div>
+
   </div>
 
   <div class="stat">
-    <div class="statTitle">⏱️ وقت الرحلة</div>
-    <div class="statValue" id="tripTime">00:00</div>
+
+    <div class="statTitle">
+      ⏱️ وقت الرحلة
+    </div>
+
+    <div
+      class="statValue"
+      id="tripTime">
+      00:00
+    </div>
+
   </div>
 
   <div class="stat">
-    <div class="statTitle">📊 متوسط السرعة</div>
-    <div class="statValue" id="average">-- كم/س</div>
+
+    <div class="statTitle">
+      📊 متوسط السرعة
+    </div>
+
+    <div
+      class="statValue"
+      id="average">
+      -- كم/س
+    </div>
+
   </div>
 
 </section>
@@ -362,7 +433,10 @@ footer{
 
     <div>
       <b>Bluetooth</b>
-      <div class="sub" id="btStatus">
+
+      <div
+        class="small"
+        id="btStatus">
         غير متصل
       </div>
     </div>
@@ -379,8 +453,11 @@ footer{
   <div class="row">
 
     <div>
-      <b>GPS</b>
-      <div class="sub" id="gpsStatus">
+      <b>GPS الموبايل</b>
+
+      <div
+        class="small"
+        id="gpsStatus">
         غير مفعل
       </div>
     </div>
@@ -399,23 +476,29 @@ footer{
 
 <section class="panel">
 
-  <h3>🗺️ موقع السكوتر</h3>
+  <h3>🗺️ الموقع</h3>
 
   <div class="map">
-    <div class="mapDot">🛴</div>
+
+    <div class="mapDot">
+      🛴
+    </div>
+
   </div>
 
-  <p class="sub" id="locationText">
+  <div
+    class="small"
+    id="locationText">
     لم يتم تحديد الموقع
-  </p>
+  </div>
 
 </section>
 
-<!-- التحكم في الرحلة -->
+<!-- الرحلة -->
 
 <section class="panel">
 
-  <h3>🚦 الرحلة</h3>
+  <h3>🚦 التحكم في الرحلة</h3>
 
   <div class="buttons">
 
@@ -435,11 +518,67 @@ footer{
 
 </section>
 
+<!-- إحصائيات إجمالية -->
+
+<section class="panel">
+
+  <h3>🏆 إحصائيات الاستخدام</h3>
+
+  <div class="grid">
+
+    <div class="stat">
+      <div class="statTitle">
+        إجمالي الرحلات
+      </div>
+      <div
+        class="statValue"
+        id="totalTrips">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="statTitle">
+        إجمالي المسافة
+      </div>
+      <div
+        class="statValue"
+        id="totalDistance">
+        0 كم
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="statTitle">
+        أطول رحلة
+      </div>
+      <div
+        class="statValue"
+        id="longestTrip">
+        0 كم
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="statTitle">
+        أعلى سرعة مسجلة
+      </div>
+      <div
+        class="statValue"
+        id="maxSpeed">
+        -- كم/س
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
 <!-- سجل الرحلات -->
 
 <section class="panel">
 
-  <h3>📋 سجل الرحلات</h3>
+  <h3>📋 الرحلات السابقة</h3>
 
   <div id="history">
     لا توجد رحلات محفوظة.
@@ -447,20 +586,20 @@ footer{
 
 </section>
 
-<!-- خدمات Bluetooth -->
+<!-- معلومات Bluetooth -->
 
 <section class="panel">
 
-  <h3>🔎 معلومات Bluetooth</h3>
+  <h3>🔎 معلومات السكوتر</h3>
 
-  <div class="sub">
-    الخدمات والخصائص التي يعلنها السكوتر فعليًا.
+  <div class="small">
+    البيانات والخدمات التي يعلنها السكوتر فعليًا.
   </div>
 
   <br>
 
   <div id="services">
-    لم يتم الاتصال بالسكوتر.
+    لم يتم الاتصال.
   </div>
 
 </section>
@@ -469,16 +608,34 @@ footer{
 
 <section class="panel">
 
-  <h3>📥 بيانات السكوتر</h3>
+  <h3>📥 البيانات المستلمة</h3>
 
-  <div class="sub">
-    البيانات الفعلية التي يرسلها السكوتر عبر Bluetooth.
+  <div class="small">
+    البيانات الفعلية القادمة من Bluetooth.
   </div>
 
   <br>
 
-  <div id="rawData" class="rawData">
+  <div
+    id="rawData"
+    class="raw">
     في انتظار الاتصال...
+  </div>
+
+</section>
+
+<!-- تنبيه -->
+
+<section class="panel">
+
+  <h3>🔔 التنبيهات</h3>
+
+  <div id="alerts">
+
+    <div class="small">
+      لا توجد تنبيهات.
+    </div>
+
   </div>
 
 </section>
@@ -486,7 +643,7 @@ footer{
 </main>
 
 <footer>
-  LIX / WG TWO • Scooter Control
+  LIX / WG TWO • Full Scooter Dashboard
 </footer>
 
 <script>
@@ -507,30 +664,14 @@ let tripStart = 0;
 let distance = 0;
 let speedSamples = [];
 
+let logs = [];
+
 /* =====================================
-   اختصار العناصر
+   أدوات
 ===================================== */
 
 const $ = id =>
   document.getElementById(id);
-
-/* =====================================
-   الرسائل
-===================================== */
-
-function showMessage(text){
-
-  const box = $("message");
-
-  box.textContent = text;
-  box.style.display = "block";
-}
-
-/* =====================================
-   سجل البيانات
-===================================== */
-
-let logs = [];
 
 function addLog(text){
 
@@ -552,17 +693,21 @@ function addLog(text){
     $("rawData").scrollHeight;
 }
 
-/* =====================================
-   تحويل البيانات
-===================================== */
+function showMessage(text){
+
+  const box = $("message");
+
+  box.textContent = text;
+  box.style.display = "block";
+}
 
 function toHex(data){
 
   const result = [];
 
   for(
-    let i = 0;
-    i < data.byteLength;
+    let i=0;
+    i<data.byteLength;
     i++
   ){
 
@@ -572,7 +717,6 @@ function toHex(data){
         .padStart(2,"0")
         .toUpperCase()
     );
-
   }
 
   return result.join(" ");
@@ -583,22 +727,36 @@ function toDecimal(data){
   const result = [];
 
   for(
-    let i = 0;
-    i < data.byteLength;
+    let i=0;
+    i<data.byteLength;
     i++
   ){
 
     result.push(
       data.getUint8(i)
     );
-
   }
 
   return result.join(" ");
 }
 
+function formatTime(seconds){
+
+  const m =
+    Math.floor(seconds / 60);
+
+  const s =
+    seconds % 60;
+
+  return (
+    String(m).padStart(2,"0") +
+    ":" +
+    String(s).padStart(2,"0")
+  );
+}
+
 /* =====================================
-   Dark / Light
+   Dark Mode
 ===================================== */
 
 function toggleTheme(){
@@ -628,11 +786,7 @@ async function connectScooter(){
   if(!navigator.bluetooth){
 
     showMessage(
-      "❌ المتصفح لا يدعم Bluetooth Web."
-    );
-
-    addLog(
-      "Web Bluetooth غير متاح."
+      "❌ Web Bluetooth غير متاح."
     );
 
     return;
@@ -643,11 +797,11 @@ async function connectScooter(){
     $("connectButton").disabled = true;
 
     showMessage(
-      "🔵 اختر السكوتر من قائمة Bluetooth..."
+      "🔵 اختر السكوتر..."
     );
 
     addLog(
-      "فتح قائمة Bluetooth."
+      "فتح Bluetooth."
     );
 
     device =
@@ -663,7 +817,7 @@ async function connectScooter(){
       });
 
     addLog(
-      "الجهاز المختار: " +
+      "تم اختيار: " +
       (device.name || "بدون اسم")
     );
 
@@ -675,21 +829,17 @@ async function connectScooter(){
 
     device.addEventListener(
       "gattserverdisconnected",
-      onDisconnected
+      disconnected
     );
 
     showMessage(
-      "🟡 تم العثور على السكوتر، جاري الاتصال..."
+      "🟡 تم العثور على السكوتر..."
     );
 
     gattServer =
       await device.gatt.connect();
 
     setConnected();
-
-    addLog(
-      "تم الاتصال بـ GATT."
-    );
 
     showMessage(
       "🟢 تم الاتصال، جاري نقل معلومات السكوتر..."
@@ -700,7 +850,7 @@ async function connectScooter(){
     await readBattery();
 
     showMessage(
-      "🟢 تم الاتصال واستقبال البيانات المتاحة."
+      "🟢 تم استقبال البيانات المتاحة."
     );
 
   }catch(error){
@@ -713,7 +863,7 @@ async function connectScooter(){
     setDisconnected();
 
     showMessage(
-      "❌ فشل الاتصال."
+      "❌ لم يتم الاتصال."
     );
 
   }finally{
@@ -722,10 +872,6 @@ async function connectScooter(){
 
   }
 }
-
-/* =====================================
-   حالة الاتصال
-===================================== */
 
 function setConnected(){
 
@@ -748,24 +894,23 @@ function setDisconnected(){
 
   $("btStatus").textContent =
     "غير متصل";
-
 }
 
-function onDisconnected(){
-
-  addLog(
-    "انقطع اتصال Bluetooth."
-  );
+function disconnected(){
 
   setDisconnected();
 
-  showMessage(
-    "🔴 انقطع اتصال السكوتر."
+  addAlert(
+    "🔴 انقطع اتصال Bluetooth."
+  );
+
+  addLog(
+    "Bluetooth disconnected."
   );
 }
 
 /* =====================================
-   اكتشاف الخدمات والخصائص
+   GATT
 ===================================== */
 
 async function discoverServices(){
@@ -777,86 +922,61 @@ async function discoverServices(){
 
   container.innerHTML = "";
 
-  let services;
-
-  try{
-
-    services =
-      await gattServer.getPrimaryServices();
-
-  }catch(error){
-
-    addLog(
-      "تعذر الحصول على الخدمات: " +
-      error.message
-    );
-
-    return;
-  }
+  const services =
+    await gattServer.getPrimaryServices();
 
   addLog(
-    "عدد الخدمات: " +
+    "Services: " +
     services.length
   );
 
   for(const service of services){
 
-    const serviceBox =
+    const box =
       document.createElement("div");
 
-    serviceBox.className =
+    box.className =
       "service";
 
-    serviceBox.innerHTML =
+    box.innerHTML =
       "<b>Service</b><br>" +
       service.uuid;
 
-    container.appendChild(
-      serviceBox
-    );
+    container.appendChild(box);
 
-    let characteristics;
+    let chars;
 
     try{
 
-      characteristics =
+      chars =
         await service.getCharacteristics();
 
     }catch(error){
 
-      addLog(
-        "تعذر قراءة خصائص الخدمة."
-      );
-
       continue;
     }
 
-    for(
-      const characteristic
-      of characteristics
-    ){
+    for(const characteristic of chars){
 
       const props =
         characteristic.properties;
 
-      const propertyList = [];
+      const list = [];
 
       if(props.read)
-        propertyList.push("READ");
+        list.push("READ");
 
       if(props.write)
-        propertyList.push("WRITE");
+        list.push("WRITE");
 
       if(props.writeWithoutResponse)
-        propertyList.push(
-          "WRITE WITHOUT RESPONSE"
-        );
+        list.push("WRITE WITHOUT RESPONSE");
 
       if(props.notify)
-        propertyList.push("NOTIFY");
+        list.push("NOTIFY");
 
       if(props.indicate)
-        propertyList.push("INDICATE");
+        list.push("INDICATE");
 
       const charBox =
         document.createElement("div");
@@ -868,23 +988,19 @@ async function discoverServices(){
         "<b>Characteristic</b><br>" +
         characteristic.uuid +
         "<br>" +
-        "<span class='sub'>" +
-        propertyList.join(" • ") +
+        "<span class='small'>" +
+        list.join(" • ") +
         "</span>";
 
-      serviceBox.appendChild(
-        charBox
-      );
+      box.appendChild(charBox);
 
       addLog(
         "CHAR " +
         characteristic.uuid +
         " [" +
-        propertyList.join(", ") +
+        list.join(", ") +
         "]"
       );
-
-      /* READ */
 
       if(props.read){
 
@@ -893,24 +1009,15 @@ async function discoverServices(){
           const value =
             await characteristic.readValue();
 
-          handleScooterData(
+          handleData(
             characteristic,
             value,
             "READ"
           );
 
-        }catch(error){
-
-          addLog(
-            "READ غير متاح: " +
-            characteristic.uuid
-          );
-
-        }
+        }catch(error){}
 
       }
-
-      /* NOTIFY */
 
       if(props.notify){
 
@@ -923,7 +1030,7 @@ async function discoverServices(){
             "characteristicvaluechanged",
             event => {
 
-              handleScooterData(
+              handleData(
                 characteristic,
                 event.target.value,
                 "NOTIFY"
@@ -932,18 +1039,7 @@ async function discoverServices(){
             }
           );
 
-          addLog(
-            "تم تشغيل Notifications لـ " +
-            characteristic.uuid
-          );
-
-        }catch(error){
-
-          addLog(
-            "تعذر تشغيل Notifications."
-          );
-
-        }
+        }catch(error){}
 
       }
 
@@ -954,10 +1050,10 @@ async function discoverServices(){
 }
 
 /* =====================================
-   البيانات الفعلية
+   البيانات الحقيقية
 ===================================== */
 
-function handleScooterData(
+function handleData(
   characteristic,
   value,
   source
@@ -980,21 +1076,16 @@ function handleScooterData(
   );
 
   /*
-    لا يتم تحويل البيانات إلى سرعة
-    أو بطارية بطريقة عشوائية.
-
-    البروتوكول الخاص بالسكوتر هو الذي
-    يحدد معنى هذه البايتات.
+    لن نحول البيانات إلى سرعة أو بطارية
+    من غير معرفة بروتوكول السكوتر.
   */
 }
 
 /* =====================================
-   Battery Service القياسية
+   Battery
 ===================================== */
 
 async function readBattery(){
-
-  if(!gattServer) return;
 
   try{
 
@@ -1014,18 +1105,15 @@ async function readBattery(){
     const battery =
       value.getUint8(0);
 
-    $("battery").textContent =
-      battery + "%";
+    updateBattery(battery);
 
     addLog(
-      "BATTERY = " +
+      "Battery = " +
       battery +
       "%"
     );
 
-    if(
-      characteristic.properties.notify
-    ){
+    if(characteristic.properties.notify){
 
       await characteristic
         .startNotifications();
@@ -1037,14 +1125,7 @@ async function readBattery(){
           const battery =
             event.target.value.getUint8(0);
 
-          $("battery").textContent =
-            battery + "%";
-
-          addLog(
-            "BATTERY UPDATE = " +
-            battery +
-            "%"
-          );
+          updateBattery(battery);
 
         }
       );
@@ -1054,8 +1135,37 @@ async function readBattery(){
   }catch(error){
 
     addLog(
-      "لا توجد Battery Service قياسية."
+      "Battery Service القياسية غير موجودة."
     );
+  }
+}
+
+function updateBattery(value){
+
+  if(value < 0 || value > 100)
+    return;
+
+  $("battery").textContent =
+    value + "%";
+
+  $("batteryBar").style.width =
+    value + "%";
+
+  if(value <= 20){
+
+    $("batteryBar").style.background =
+      "#ef4444";
+
+    addAlert(
+      "🔋 البطارية منخفضة: " +
+      value +
+      "%"
+    );
+
+  }else{
+
+    $("batteryBar").style.background =
+      "#22c55e";
   }
 }
 
@@ -1068,14 +1178,13 @@ function startGPS(){
   if(!navigator.geolocation){
 
     $("gpsStatus").textContent =
-      "GPS غير مدعوم";
+      "غير مدعوم";
 
     return;
   }
 
-  if(gpsWatch !== null){
+  if(gpsWatch !== null)
     return;
-  }
 
   $("gpsStatus").textContent =
     "جاري تحديد الموقع...";
@@ -1105,10 +1214,10 @@ function startGPS(){
       error => {
 
         $("gpsStatus").textContent =
-          "تعذر تحديد الموقع";
+          "فشل GPS";
 
         addLog(
-          "GPS: " +
+          "GPS Error: " +
           error.message
         );
 
@@ -1122,12 +1231,12 @@ function startGPS(){
     );
 
   addLog(
-    "تم تشغيل GPS."
+    "GPS started."
   );
 }
 
 /* =====================================
-   الرحلات
+   الرحلة
 ===================================== */
 
 function startTrip(){
@@ -1154,7 +1263,7 @@ function startTrip(){
     "الرحلة تعمل";
 
   addLog(
-    "بدأت الرحلة."
+    "Trip started."
   );
 }
 
@@ -1167,11 +1276,6 @@ function updateTrip(){
     Math.floor(
       (Date.now() - tripStart) / 1000
     );
-
-  /*
-    أثناء عدم معرفة Characteristic
-    الخاصة بالسرعة، لا نضع سرعة وهمية.
-  */
 
   $("tripTime").textContent =
     formatTime(elapsed);
@@ -1187,8 +1291,6 @@ function stopTrip(){
 
   clearInterval(tripTimer);
 
-  tripTimer = null;
-
   const elapsed =
     Math.floor(
       (Date.now() - tripStart) / 1000
@@ -1200,32 +1302,19 @@ function stopTrip(){
   );
 
   $("status").textContent =
-    device && device.gatt.connected
+    device &&
+    device.gatt &&
+    device.gatt.connected
       ? "السكوتر متصل"
       : "السكوتر غير متصل";
 
   addLog(
-    "انتهت الرحلة."
-  );
-}
-
-function formatTime(seconds){
-
-  const minutes =
-    Math.floor(seconds / 60);
-
-  const secs =
-    seconds % 60;
-
-  return (
-    String(minutes).padStart(2,"0") +
-    ":" +
-    String(secs).padStart(2,"0")
+    "Trip stopped."
   );
 }
 
 /* =====================================
-   سجل الرحلات
+   الرحلات
 ===================================== */
 
 function saveTrip(distance,time){
@@ -1250,7 +1339,7 @@ function saveTrip(distance,time){
   });
 
   trips =
-    trips.slice(0,30);
+    trips.slice(0,50);
 
   localStorage.setItem(
     "scooterTrips",
@@ -1258,6 +1347,7 @@ function saveTrip(distance,time){
   );
 
   renderHistory();
+  updateStatistics();
 }
 
 function renderHistory(){
@@ -1279,71 +1369,50 @@ function renderHistory(){
 
   $("history").innerHTML =
     trips.map(
-      (trip,index) => `
+      (trip,index)=>`
 
-        <div class="historyItem">
+      <div class="historyItem">
 
-          <div>
-            <b>رحلة ${index+1}</b>
+        <div>
+          <b>رحلة ${index+1}</b>
 
-            <div class="sub">
-              ${trip.date}
-            </div>
+          <div class="small">
+            ${trip.date}
           </div>
-
-          <div>
-            <b>${trip.distance} كم</b>
-
-            <div class="sub">
-              ${formatTime(trip.time)}
-            </div>
-          </div>
-
         </div>
 
-      `
+        <div>
+          <b>${trip.distance} كم</b>
+
+          <div class="small">
+            ${formatTime(trip.time)}
+          </div>
+        </div>
+
+      </div>
+
+    `
     ).join("");
 }
 
 /* =====================================
-   بدء البرنامج
+   الإحصائيات
 ===================================== */
 
-renderHistory();
+function updateStatistics(){
 
-(async function(){
-
-  if(!navigator.bluetooth){
-
-    addLog(
-      "المتصفح لا يدعم Web Bluetooth."
+  const trips =
+    JSON.parse(
+      localStorage.getItem(
+        "scooterTrips"
+      ) || "[]"
     );
 
-    return;
-  }
+  $("totalTrips").textContent =
+    trips.length;
 
-  try{
-
-    const available =
-      await navigator.bluetooth
-        .getAvailability();
-
-    addLog(
-      "Bluetooth available: " +
-      available
-    );
-
-  }catch(error){
-
-    addLog(
-      "تعذر فحص Bluetooth."
-    );
-
-  }
-
-})();
-
-</script>
-
-</body>
-  </html>
+  const total =
+    trips.reduce(
+      (sum,t)=>
+        sum
+  
